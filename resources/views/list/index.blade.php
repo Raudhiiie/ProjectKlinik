@@ -148,6 +148,7 @@
 <script src="{{ url('plugins/datatables-buttons/js/buttons.colVis.min.js')}}"></script>
 <script src="{{url('https://cdn.jsdelivr.net/npm/sweetalert2@10')}}"></script>
 <script src="{{url('https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js')}}"></script>
+
 <!-- Page specific script -->
 <script>
     $(function() {
@@ -168,7 +169,20 @@
                         });
                     }
                 },
-                "copy", "csv"
+                "copy", 
+                "csv",
+                {
+                    extend: 'pdf',
+                    text: 'PDF',
+                    exportOptions: { 
+                        columns: ':visible', modifier: { page: 'all' } 
+                    },
+                    customize: function(doc) {
+                        doc.defaultStyle.fontSize = 10; // Ukuran font lebih kecil
+                        doc.styles.tableHeader.fontSize = 12; // Header lebih besar
+                        doc.styles.tableHeader.bold = true;
+                    }
+                }
             ]
         });
 

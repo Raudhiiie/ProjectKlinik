@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ListController;
+use App\Http\Controllers\PasienController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,8 +18,8 @@ use App\Http\Controllers\ListController;
     return view('template/master');
 });*/
 
-Route::get('/', [ListController::class, 'index']);
-Route::resource('list', ListController::class);
+Route::get('/', [PasienController::class, 'index']);
+Route::resource('pasien', PasienController::class);
 
 
 

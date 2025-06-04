@@ -14,7 +14,6 @@
                     <div class="col col-md-12 form-group">
                         <label>No PD</label>
                         <input type="text" class="form-control" id="nopd" name="nopd" value="{{ $list->nopd}}">
-
                     </div>
                 </div>
                 <div class="row">
@@ -27,7 +26,6 @@
                     <div class="col col-md-12 form-group">
                         <label>Uraian</label>
                         <input type="text" class="form-control" id="uraian" name="uraian" value="{{ $list->uraian}}">
-
                     </div>
                 </div>
                 <div class="row">
@@ -68,14 +66,12 @@
                     <div class="col col-md-12 form-group">
                         <label>Jumlah</label>
                         <input type="number" class="form-control" id="jlh" name="jlh" oninput="calculateSelisih()" value="{{ $list->jlh}}">
-
                     </div>
                 </div>
                 <div class="row">
                     <div class="col col-md-12 form-group">
                         <label>Realisasi</label>
                         <input type="number" class="form-control" id="realisasi" name="realisasi" oninput="calculateSelisih()" value="{{ $list->realisasi}}">
-
                     </div>
                 </div>
                 <div class="row">
@@ -107,7 +103,6 @@
                     <div class="col col-md-12 form-group">
                         <label>Rekening</label>
                         <input type="text" class="form-control" id="rekening" name="rekening" value="{{ $list->rekening}}">
-
                     </div>
                 </div>
                 <div class="row">
@@ -125,7 +120,6 @@
                     <div class="col col-md-12 form-group">
                         <label>Keterangan</label>
                         <input type="text" class="form-control" id="keterangan" name="keterangan" value="{{ $list->keterangan}}">
-
                     </div>
                 </div>
                 <div class="card-footer">
@@ -164,8 +158,8 @@
     formatDate('tglpelunasan', 'formattedTanggalPelunasan');
 
     function calculateSelisih() {
-        var jumlah = parseInt(document.getElementById('jlh').value);
-        var realisasi = parseInt(document.getElementById('realisasi').value);
+        var jumlah = parseFloat(document.getElementById('jlh').value) || 0;
+        var realisasi = parseFloat(document.getElementById('realisasi').value) || 0;
         var selisih = jumlah - realisasi;
         document.getElementById('selisih').value = selisih;
 
@@ -173,8 +167,29 @@
         document.getElementById('status').value = status;
 
         var statusIndicator = document.getElementById('status-indicator');
-        statusIndicator.textContent = status === 'outstanding' ? 'Outstanding' : 'Closed';
-        statusIndicator.className = status === 'outstanding' ? 'text-warning mr-1 status-outstanding' : 'text-warning mr-1 status-closed';
+        if (statusIndicator) {
+            statusIndicator.textContent = status === 'outstanding' ? 'Outstanding' : 'Closed';
+            statusIndicator.className = status === 'outstanding' ? 'text-warning mr-1 status-outstanding' : 'text-warning mr-1 status-closed';
+        }
+    }
+
+    document.getElementById('jlh').addEventListener('input', calculateSelisih);
+    document.getElementById('realisasi').addEventListener('input', calculateSelisih);
+
+    function formatRupiah(angka, prefix) {
+        var number_string = angka.replace(/[^,\d]/g, '').toString(),
+            split = number_string.split(','),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+        if (ribuan) {
+            separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+
+        rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+        return prefix === undefined ? rupiah : (rupiah ? 'Rp ' + rupiah : '');
     }
 
     // Apply formatRupiah function to input fields

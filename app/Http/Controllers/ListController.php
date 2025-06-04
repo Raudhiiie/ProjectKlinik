@@ -45,8 +45,13 @@ class ListController extends Controller
             'evidence' => 'required|file|mimes:pdf,jpg,png,jpeg|max:2048',
             'keterangan' => 'required',
         ]);
+        // Calculate selisih
+        $selisih = $request->jlh - $request->realisasi;
+    
+        // Handle file upload
         $evidence = $request->file('evidence');
         $filename = $evidence->hashName();
+        $evidence->storeAs('public/list', $filename);
 
         $evidence->storeAs('public/list', $filename);
         $list = Lists::create([
@@ -58,7 +63,7 @@ class ListController extends Controller
             'departement' => $request->departement,
             'jlh' => $request->jlh,
             'realisasi' => $request->realisasi,
-            'selisih' => $request->selisih,
+            'selisih' => $selisih,
             'status' =>$request->status,
             'tglpembayaran' => $request->tglpembayaran,
             'tglpelunasan' => $request->tglpelunasan,
@@ -100,6 +105,11 @@ class ListController extends Controller
             'evidence' => 'nullable|file|mimes:jpg,png,jpeg,pdf|max:2048',
         ]);
         $list = Lists::findOrFail($id);
+        // Calculate selisih if jlh or realisasi changes
+        $selisih = $request->jlh - $request->realisasi;
+        // Determine status based on selisih
+        $status = $selisih == 0 ? 'closed' : 'outstanding';
+
         if($request->file('evidence') == ""){
             $list->update([
                 'nopd' => $request->nopd,
@@ -109,6 +119,8 @@ class ListController extends Controller
                 'departement' => $request->departement,
                 'jlh' => $request->jlh,
                 'realisasi' => $request->realisasi,
+                'selisih' => $selisih,
+                'status' =>$status,
                 'tglpembayaran' => $request->tglpembayaran,
                 'tglpelunasan' => $request->tglpelunasan,
                 'rekening' => $request->rekening,
@@ -126,6 +138,8 @@ class ListController extends Controller
                 'departement' => $request->departement,
                 'jlh' => $request->jlh,
                 'realisasi' => $request->realisasi,
+                'selisih' => $selisih,
+                'status' =>$status,
                 'tglpembayaran' => $request->tglpembayaran,
                 'tglpelunasan' => $request->tglpelunasan,
                 'rekening' => $request->rekening,
