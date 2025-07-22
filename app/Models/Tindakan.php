@@ -20,3 +20,4 @@ class Tindakan extends Model
         return $this->belongsTo(Terapis::class);
     }
 }
+

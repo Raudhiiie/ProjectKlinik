@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Sublayanan extends Model
+class SubLayanan extends Model
 {
     use HasFactory;
     protected $fillable = [

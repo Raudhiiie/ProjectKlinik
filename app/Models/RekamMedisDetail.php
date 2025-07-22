@@ -12,7 +12,7 @@ class RekamMedisDetail extends Model
 
     public function sublayanan()
     {
-        return $this->belongsTo(Sublayanan::class);
+        return $this->belongsTo(SubLayanan::class);
     }
 
     public function rekamMedis()
