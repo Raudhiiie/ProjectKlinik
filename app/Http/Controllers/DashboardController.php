@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pasien;
-use App\Models\rekamMedis;
+use App\Models\RekamMedis;
 //use App\Models\Dokter;
 use App\Models\Terapis;
 use App\Models\Antrian;
@@ -51,7 +51,7 @@ class DashboardController extends Controller
 
     public function indexdokter()
     {
-        $rekam_medis = rekamMedis::count(); 
+        $rekam_medis = RekamMedis::count(); 
 
     $pasien_hari_ini = Antrian::whereDate('tanggal', Carbon::today())->count();
 
