@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class SubLayanan extends Model
 {
     use HasFactory;
+
+    protected $table = 'sublayanans';
+    
     protected $fillable = [
         'layanan_id',
         'nama',
