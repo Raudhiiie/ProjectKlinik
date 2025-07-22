@@ -14,17 +14,14 @@ return new class extends Migration
         Schema::create('transaksis', function (Blueprint $table) {
             $table->id();
             $table->string('no_rm');
-            $table->unsignedBigInteger('sub_layanan_id');
             $table->date('tanggal');
-            $table->string('jenis');
             $table->string('metode_pembayaran');
-            $table->integer('jumlah');
-            $table->integer('total_harga');
-            $table->string('keterangan');
+
+            $table->string('keterangan')->nullable();
+            $table->integer('total_harga')->nullable();
             $table->timestamps();
 
             $table->foreign('no_rm')->references('no_rm')->on('pasiens')->onDelete('cascade');
-            $table->foreign('sub_layanan_id')->references('id')->on('sublayanans')->onDelete('cascade');
         });
     }
 

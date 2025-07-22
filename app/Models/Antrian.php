@@ -20,4 +20,9 @@ class Antrian extends Model
     {
         return $this->belongsTo(Pasien::class, 'no_rm', 'no_rm');
     }
+
+    public function scopeHariIni($query)
+    {
+        return $query->where('tanggal', now()->toDateString());
+    }
 }

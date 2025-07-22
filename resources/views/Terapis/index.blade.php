@@ -22,9 +22,9 @@
     <div class="card-body">
 
         <div class="d-flex justify-content-between mb-3">
-            <!-- "Tambah" button -->
-            <a href="{{route('list.create')}}" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah</a>
-
+            <!-- "Tambah" button
+            <a href="{{route('terapis.create')}}" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah</a>
+ -->
 
             <!-- DataTable buttons -->
             <div id="datatable-buttons"></div>

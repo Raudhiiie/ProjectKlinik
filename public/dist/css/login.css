@@ -1,0 +1,38 @@
+body {
+    background-color: #fde5ef;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-box {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-box img {
+    width: 80px;
+    margin-bottom: 10px;
+}
+
+.btn-pink {
+    background-color: #fdd9e5;
+    color: black;
+    border: none;
+}
+
+.btn-pink:hover {
+    background-color: #fcb6d3;
+    color: black;
+}
+
+.form-control::placeholder {
+    font-size: 0.9rem;
+    color: #aaa;
+}

@@ -36,6 +36,52 @@ class AntrianController extends Controller
         ], 201);
     }
 
+    public function store(Request $request)
+    {
+        $request->validate([
+            'no_rm' => 'required|exists:pasiens,no_rm',
+        ]);
+
+        $tanggalHariIni = Carbon::today()->toDateString();
+
+        // Cek apakah pasien sudah antri hari ini
+        $cek = Antrian::where('no_rm', $request->no_rm)
+            ->where('tanggal', $tanggalHariIni)
+            ->first();
+
+        if ($cek) {
+            return redirect()->back()->with('success', 'Pasien sudah masuk antrian hari ini.');
+        }
+
+        // Hitung no antrian hari ini
+        $jumlahAntrian = Antrian::where('tanggal', $tanggalHariIni)->count();
+        $noAntrianBaru = $jumlahAntrian + 1;
+
+        Antrian::create([
+            'no_rm' => $request->no_rm,
+            'no_antrian' => $noAntrianBaru,
+            'tanggal' => $tanggalHariIni,
+            'status' => 'menunggu',
+            'status_panggil' => 'Belum Dipanggil',
+            'waktu_daftar' => Carbon::now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Pasien berhasil dimasukkan ke antrian.');
+    }
+
+
+    public function panggilPasien($id)
+    {
+        $antrian = Antrian::findOrFail($id);
+
+        $antrian->status_panggil = 'Dipanggil';
+        $antrian->status = 'proses'; // jika kamu ingin langsung ubah ke 'proses'
+        $antrian->save();
+
+        return redirect()->back()->with('success', 'Pasien berhasil dipanggil.');
+    }
+
+
     // Ubah status antrian
     public function ubahStatus(Request $request, $id)
     {
@@ -95,5 +141,23 @@ class AntrianController extends Controller
             'success' => true,
             'message' => 'Antrian berhasil dihapus',
         ]);
+    }
+
+    public function monitor()
+    {
+        $today = Carbon::today()->toDateString();
+
+        $antrianDipanggil = Antrian::whereDate('tanggal', $today)
+            ->where('status_panggil', 'Dipanggil')
+            ->orderByDesc('updated_at')
+            ->first();
+
+        $antrianSelanjutnya = Antrian::whereDate('tanggal', $today)
+            ->where('status_panggil', 'Belum Dipanggil')
+            ->orderBy('no_antrian')
+            ->take(5)
+            ->get();
+
+        return view('monitor.antrian', compact('antrianDipanggil', 'antrianSelanjutnya'));
     }
 }

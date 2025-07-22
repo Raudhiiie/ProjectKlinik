@@ -10892,6 +10892,17 @@ html.maximized-card {
   color: #fff;
 }
 
+.btn-pink {
+        background-color: #f8d7e3;
+        color: #000;
+        border: 1px solid #f0b6c2;
+    }
+
+    .btn-pink:hover {
+        background-color: #f5c4d6;
+        color: #000;
+    }
+
 .btn.disabled, .btn:disabled {
   cursor: not-allowed;
 }

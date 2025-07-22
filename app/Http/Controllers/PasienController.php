@@ -12,18 +12,12 @@ class PasienController extends Controller
     /**
      * Display a listing of the resource.
      */
+
     public function index()
     {
-        $pasien = Pasien::latest()->paginate(10);
+        $pasien = Pasien::withCount('antrians')->latest()->paginate(10);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'List Data Pasien',
-            'data' => $pasien
-        ]);
-
-        //     $pasien = Pasien::latest()->paginate(10);
-        //     return view('pasien.index', compact('pasien'));
+        return view('terapis.pasien.index', compact('pasien'));
     }
 
     /**
@@ -31,7 +25,7 @@ class PasienController extends Controller
      */
     public function create()
     {
-        return view('pasien.tambah');
+        return view('terapis.pasien.tambah');
     }
 
     /**
@@ -63,53 +57,20 @@ class PasienController extends Controller
         ]);
 
         if ($pasien) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Data Berhasil Disimpan!',
-                'data' => $pasien
-            ], 201);
+            return redirect()->route('terapis.pasien.index')->with(['success' => 'Data Berhasil Disimpan!']);
         } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Data Gagal Disimpan!',
-            ], 500);
+            return redirect()->route('terapis.pasien.index')->with(['error' => 'Data Gagal Disimpan!']);
         }
-        // $request->validate([
-        //     'no_rm' => 'required',
-        //     'nama' => 'required',
-        //     'nik' => 'required',
-        //     'alamat' => 'required',
-        //     'pekerjaan' => 'required',
-        //     'jenis_kelamin' => 'required',
-        //     'tanggal_lahir' => 'required',
-        //     'no_hp' => 'required',
-        // ]);
-
-        // $pasien = Pasien::create([
-
-        //     'no_rm' => $request->no_rm,
-        //     'nama' => $request->nama,
-        //     'nik' => $request->nik,
-        //     'alamat' => $request->alamat,
-        //     'pekerjaan' => $request->pekerjaan,
-        //     'jenis_kelamin' => $request->jenis_kelamin,
-        //     'tanggal_lahir' => $request->tanggal_lahir,
-        //     'no_hp' => $request->no_hp,
-
-        // ]);
-        // if ($pasien) {
-        //     return redirect()->route('pasien.index')->with(['success' => 'Data Berhasil Disimpan!']);
-        // } else {
-        //     return redirect()->route('pasien.index')->with(['error' => 'Data Gagal Disimpan!']);
-        // }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Pasien $pasien)
+    public function show($no_rm)
     {
-        //
+        $pasien = Pasien::with(['rekamMedis', 'antrians'])->where('no_rm', $no_rm)->firstOrFail();
+
+        return view('terapis.pasien.show', compact('pasien'));
     }
 
     /**
@@ -118,7 +79,7 @@ class PasienController extends Controller
     public function edit($no_rm)
     {
         $pasien = Pasien::find($no_rm);
-        return view('pasien.update', compact('pasien'));
+        return view('terapis.pasien.update', compact('pasien'));
     }
 
     /**
@@ -156,35 +117,10 @@ class PasienController extends Controller
         ]);
 
         if ($updated) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Data pasien berhasil diperbarui',
-                'data' => $pasien,
-            ]);
+            return redirect()->route('terapis.pasien.index')->with(['success' => 'Data Berhasil Diubah!']);
         } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal memperbarui data pasien',
-            ]);
+            return redirect()->route('terapis.pasien.index')->with(['error' => 'Data Gagal Diubah!']);
         }
-
-        // $pasien = Pasien::findOrFail($no_rm);
-
-        // $pasien->update([
-        //     'nama' => $request->nama,
-        //     'nik' => $request->nik,
-        //     'alamat' => $request->alamat,
-        //     'pekerjaan' => $request->pekerjaan,
-        //     'jenis_kelamin' => $request->jenis_kelamin,
-        //     'tanggal_lahir' => $request->tanggal_lahir,
-        //     'no_hp' => $request->no_hp,
-        // ]);
-
-        // if ($pasien) {
-        //     return redirect()->route('pasien.index')->with(['success' => 'Data Berhasil Diubah!']);
-        // } else {
-        //     return redirect()->route('pasien.index')->with(['error' => 'Data Gagal Diubah!']);
-        // }
     }
 
     /**
@@ -193,25 +129,12 @@ class PasienController extends Controller
     public function destroy($no_rm)
     {
         $pasien = Pasien::where('no_rm', $no_rm)->first();
-        $pasien->delete();
-        if ($pasien) {
-            return response()->json([
-                'status' => 200,
-                'success' => true,
-                'message' => 'Data Berhasil Dihapus!',
-            ], 200);
-        } else {
-            return response()->json([
-                'status' => 500,
-                'success' => false,
-                'message' => 'Data Berhasil Dihapus!',
-            ], 500);
-        }
 
-        // if ($pasien) {
-        //     return redirect()->route('pasien.index')->with(['success' => 'Data Berhasil Dihapus!']);
-        // } else {
-        //     return redirect()->route('pasien.index')->with(['error' => 'Data Gagal Dihapus!']);
-        // }
+        if ($pasien) {
+            $pasien->delete();
+            return redirect()->route('terapis.pasien.index')->with('success', 'Data berhasil dihapus.');
+        } else {
+            return redirect()->back()->with('error', 'Data tidak ditemukan.');
+        }
     }
 }

@@ -1,0 +1,35 @@
+.dashboard-container {
+    background-color: #f5f5f5;
+    padding: 2rem;
+    border-radius: 12px;
+}
+
+.info-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 150px;
+    width:  400px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    transition: 0.3s ease;
+}
+
+.dashboard-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: #000;
+}
+
+.info-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.info-value {
+    font-size: 1rem;
+    color: #333;
+}

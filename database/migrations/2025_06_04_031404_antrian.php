@@ -17,6 +17,8 @@ return new class extends Migration
             $table->integer('no_antrian');
             $table->date('tanggal');
             $table->string('status')->default('menunggu');
+            $table->string('status_panggil')->default('Belum Dipanggil');
+
             $table->timestamp('waktu_daftar')->useCurrent();
             $table->timestamps();
 

@@ -25,7 +25,7 @@ use App\Http\Controllers\TransaksiController;
 
 // routes/api.php
 //pasien
-Route::get('/pasien', [PasienController::class, 'index']);
+// Route::get('/pasien', [PasienController::class, 'index']);
 Route::post('/pasien', [PasienController::class, 'store']);
 Route::put('/pasien/{no_rm}', [PasienController::class, 'update']);
 Route::delete('/pasien/{no_rm}', [PasienController::class, 'destroy']);

@@ -2,83 +2,255 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\Transaksi;
+use App\Models\TransaksiDetail;
 use App\Models\SubLayanan;
+use App\Models\Pasien;
+use App\Models\Produk;
+use App\Models\Terapis;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TransaksiController extends Controller
 {
-    public function simpanTransaksi(Request $request)
+    public function index(Request $request)
+    {
+        $query = Transaksi::with(['pasien', 'details.subLayanan.layanan', 'details.produk'])
+            ->orderBy('created_at', 'desc');
+
+        if ($request->status) {
+            $query->where('keterangan', $request->status);
+        }
+
+        if ($request->nama_layanan) {
+            $query->whereHas('details.subLayanan', function ($q) use ($request) {
+                $q->where('nama', $request->nama_layanan);
+            });
+        }
+
+        $transaksi = $query->get();
+        $allSubLayanan = SubLayanan::pluck('nama')->unique();
+
+        return view('terapis.transaksi.index', compact('transaksi', 'allSubLayanan'));
+    }
+
+    public function create()
+    {
+        $pasiens = Pasien::orderBy('nama')->get();
+        $subLayanan = SubLayanan::orderBy('nama')->get();
+        $produk = Produk::orderBy('nama_produk')->get();
+        $terapis = Terapis::all();
+        return view('terapis.transaksi.tambah', compact('pasiens', 'subLayanan', 'produk', 'terapis'));
+    }
+
+    public function store(Request $request)
     {
         $request->validate([
             'no_rm' => 'required|exists:pasiens,no_rm',
-            'sub_layanan_id' => 'required|exists:sublayanans,id',
-            'tanggal' => 'required|date',
-            'jenis' => 'required|string',
-            'metode_pembayaran' => 'required|string',
-            'jumlah' => 'required|integer|min:1',
-            'keterangan' => 'nullable|string',
+            'terapis_id' => 'required|exists:terapis,id',
+            'metode_pembayaran' => 'required|in:cash,transfer,qris,debit',
+            'items' => 'required|array|min:1',
+            'items.*.jenis' => 'required|in:layanan,produk',
+            'items.*.id' => 'required',
+            'items.*.jumlah' => 'required|integer|min:1'
         ]);
 
-        $subLayanan = SubLayanan::find($request->sub_layanan_id);
+        DB::beginTransaction();
+        try {
 
-        $totalHarga = $subLayanan->harga * $request->jumlah;
+            // Hitung total
+            $total = collect($request->items)->sum(function ($item) {
+                if ($item['jenis'] == 'layanan') {
+                    $harga = SubLayanan::find($item['id'])->harga;
+                } else {
+                    $harga = Produk::find($item['id'])->harga;
+                }
+                return $harga * $item['jumlah'];
+            });
 
-        $transaksi = Transaksi::create([
-            'no_rm'    => $request->no_rm,
-            'sub_layanan_id' => $request->sub_layanan_id,
-            'tanggal' => $request->tanggal,
-            'jenis' => $request->jenis,
-            'metode_pembayaran' => $request->metode_pembayaran,
-            'keterangan' => $request->keterangan,
-            'jumlah' => $request->jumlah,
-            'total_harga' => $totalHarga,
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Transaksi berhasil disimpan',
-            'data' => $transaksi,
-        ]);
+            // Buat transaksi
+            $transaksi = Transaksi::create([
+                'no_rm' => $request->no_rm,
+                'terapis_id' => $request->terapis_id,
+                'tanggal' => now(),
+                'metode_pembayaran' => $request->metode_pembayaran,
+                'keterangan' => 'Belum Bayar',
+                'total_harga' => $total
+            ]);
+            // Simpan detail transaksi
+            foreach ($request->items as $item) {
+                if ($item['jenis'] == 'layanan') {
+                    $harga = SubLayanan::find($item['id'])->harga;
+                    $transaksi->details()->create([
+                        'jenis' => 'layanan',
+                        'layanan_id' => $item['id'],
+                        'jumlah' => $item['jumlah'],
+                        'harga_satuan' => $harga,
+                        'subtotal' => $harga * $item['jumlah']
+                    ]);
+                } else {
+                    $harga = Produk::find($item['id'])->harga;
+                    $transaksi->details()->create([
+                        'jenis' => 'produk',
+                        'produk_id' => $item['id'],
+                        'jumlah' => $item['jumlah'],
+                        'harga_satuan' => $harga,
+                        'subtotal' => $harga * $item['jumlah']
+                    ]);
+                }
+            }
+            DB::commit();
+            return redirect()->route('terapis.transaksi.index')->with('success', 'Transaksi berhasil dibuat');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Gagal: ' . $e->getMessage());
+        }
+    }
+    public function edit($id)
+    {
+        $transaksi = Transaksi::with('details')->findOrFail($id);
+        $pasiens = Pasien::orderBy('nama')->get();
+        $subLayanan = SubLayanan::orderBy('nama')->get();
+        $produks = Produk::orderBy('nama')->get();
+        return view('terapis.transaksi.update', compact('transaksi', 'pasiens', 'subLayanan', 'produks'));
     }
 
-    // Contoh method untuk melihat semua transaksi (optional)
-    public function index()
+    public function update(Request $request, $id)
     {
-        $transaksi = Transaksi::with(['pasien', 'subLayanan'])->get();
+        // Implementasi mirip `store()`, tetapi update data
+        // Bisa saya bantu buatkan juga jika diperlukan
+    }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'List semua transaksi',
-            'data' => $transaksi,
-        ]);
+    public function destroy($id)
+    {
+        $transaksi = Transaksi::findOrFail($id);
+
+        if ($transaksi) {
+            $transaksi->details()->delete(); // hapus detail dulu
+            $transaksi->delete();
+            return redirect()->route('terapis.transaksi.index')->with('success', 'Data berhasil dihapus.');
+        } else {
+            return redirect()->back()->with('error', 'Data tidak ditemukan.');
+        }
     }
 
     public function laporan(Request $request)
-{
-    // Validasi input tanggal
-    $request->validate([
-        'tanggal_mulai' => 'required|date',
-        'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-    ]);
+    {
+        $request->validate([
+            'tanggal_mulai' => 'required|date',
+            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
+        ]);
 
-    $tanggalMulai = $request->tanggal_mulai;
-    $tanggalSelesai = $request->tanggal_selesai;
+        $transaksis = Transaksi::with(['pasien', 'details.subLayanan', 'details.produk'])
+            ->whereBetween('tanggal', [$request->tanggal_mulai, $request->tanggal_selesai])
+            ->get();
 
-    // Query transaksi dengan relasi pasien dan sub layanan, filter berdasarkan tanggal
-    $transaksis = Transaksi::with(['pasien', 'subLayanan'])
-        ->whereBetween('tanggal', [$tanggalMulai, $tanggalSelesai])
-        ->get();
+        $totalPendapatan = $transaksis->sum('total_harga');
 
-    // Hitung total pendapatan
-    $totalPendapatan = $transaksis->sum('total_harga');
+        return response()->json([
+            'success' => true,
+            'message' => "Laporan transaksi dari {$request->tanggal_mulai} sampai {$request->tanggal_selesai}",
+            'total_pendapatan' => $totalPendapatan,
+            'data' => $transaksis,
+        ]);
+    }
 
-    return response()->json([
-        'success' => true,
-        'message' => "Laporan transaksi dari $tanggalMulai sampai $tanggalSelesai",
-        'total_pendapatan' => $totalPendapatan,
-        'data' => $transaksis,
-    ]);
-}
+    // TransaksiController.php
+    public function bayar(Request $request, $id)
+    {
+        $request->validate([
+            'metode_pembayaran' => 'required|in:cash,transfer,qris,debit',
+            'jumlah_bayar' => 'required|numeric|min:0'
+        ]);
+
+        $transaksi = Transaksi::findOrFail($id);
+        $total = $transaksi->total_harga;
+        $bayar = $request->jumlah_bayar;
+
+        if ($bayar < $total) {
+            return back()->with('error', 'Jumlah pembayaran kurang dari total tagihan');
+        }
+
+        $transaksi->update([
+            'metode_pembayaran' => $request->metode_pembayaran,
+            'jumlah_bayar' => $bayar,
+            'kembalian' => $bayar - $total,
+            'keterangan' => 'Lunas',
+            'tanggal_bayar' => now()
+        ]);
+
+        return redirect()->route('terapis.transaksi.index')
+            ->with('success', 'Pembayaran berhasil dicatat');
+    }
+
+    public function konfirmasi(Request $request, $id)
+    {
+        DB::beginTransaction();
+
+        try {
+            $transaksi = Transaksi::findOrFail($id);
+
+            $request->validate([
+                'metode_pembayaran' => 'required|in:cash,debit,credit,qris',
+                'jumlah_bayar' => 'required|numeric|min:' . $transaksi->total_harga
+            ]);
+
+            $transaksi->update([
+                'metode_pembayaran' => $request->metode_pembayaran,
+                'keterangan' => 'Lunas',
+                'tanggal_bayar' => now(),
+                'jumlah_bayar' => $request->jumlah_bayar,
+                'kembalian' => $request->jumlah_bayar - $transaksi->total_harga
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('terapis.transaksi.index')
+                ->with('success', 'Transaksi berhasil dikonfirmasi.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', 'Gagal mengkonfirmasi: ' . $e->getMessage());
+        }
+    }
+
+    public function cetak($id)
+    {
+        $transaksi = Transaksi::with(['pasien', 'details.subLayanan.layanan', 'terapis'])->findOrFail($id);
+        return view('terapis.transaksi.cetak', compact('transaksi'));
+    }
+
+    // TransaksiController.php
+
+    public function showBayar($id)
+    {
+        $transaksi = Transaksi::findOrFail($id);
+        return view('transaksi.modal_bayar', compact('transaksi'));
+    }
+
+    public function prosesBayar(Request $request, $id)
+    {
+        $request->validate([
+            'metode_pembayaran' => 'required|in:cash,transfer,qris,debit',
+            'jumlah_bayar' => 'required|numeric|min:0'
+        ]);
+
+        $transaksi = Transaksi::findOrFail($id);
+        $total = $transaksi->total_harga;
+        $bayar = $request->jumlah_bayar;
+
+        if ($bayar < $total) {
+            return back()->with('error', 'Jumlah pembayaran kurang dari total tagihan');
+        }
+
+        $transaksi->update([
+            'metode_pembayaran' => $request->metode_pembayaran,
+            'jumlah_bayar' => $bayar,
+            'kembalian' => $bayar - $total,
+            'keterangan' => 'Lunas',
+            'tanggal_bayar' => now()
+        ]);
+
+        return redirect()->route('transaksi.index')
+            ->with('success', 'Pembayaran berhasil dicatat');
+    }
 }

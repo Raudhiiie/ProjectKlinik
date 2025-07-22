@@ -2579,6 +2579,20 @@ fieldset:disabled a.btn {
   pointer-events: none;
 }
 
+.btn-pink {
+  background-color: #e21b76;
+  color: #fff;
+  border-color: #f0b6c2;
+  /* border: 1px solid #f0b6c2;
+  box-shadow: none; */
+}
+
+.btn-pink:hover {
+  color: #fff;
+  background-color: #f8d7e3;
+  border-color: #f0b6c2;    
+}
+
 .btn-primary {
   color: #fff;
   background-color: #007bff;

@@ -19,6 +19,8 @@ return new class extends Migration
             $table->integer('out');
             $table->integer('sisa');
             $table->string('posisi');
+            $table->string('terapis_id')->nullable();
+            $table->integer('harga')->nullable();
             $table->timestamps();
         });
     }

@@ -1,0 +1,28 @@
+.btn-pink {
+    background-color: #f06292;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+}
+
+.btn-pink:hover {
+    background-color: #ec407a;
+}
+
+.table th,
+.table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.card-title-custom {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #000;
+}
+
+.action-icons i {
+    margin: 0 5px;
+    cursor: pointer;
+}

@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('rekam_medis', function (Blueprint $table) {
             $table->id();
+            $table->string('no_rm'); // foreign key dari pasien
             $table->date('tanggal');
             $table->string('keluhan');
-            $table->string('obat');
             $table->string('tindakan');
+            $table->string('obat');
+            $table->string('terapis');
             $table->timestamps();
         });
     }

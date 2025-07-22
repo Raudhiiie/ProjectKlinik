@@ -18,4 +18,9 @@ class Layanan extends Model
     {
         return $this->harga * $this->jumlah;
     }
+
+    public function sublayanans()
+    {
+        return $this->hasMany(Sublayanan::class);
+    }
 }

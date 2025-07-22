@@ -42,4 +42,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function isTerapis()
+    {
+        return $this->role === 'terapis';
+    }
+
+    public function isDokter()
+    {
+        return $this->role === 'dokter';
+    }
 }

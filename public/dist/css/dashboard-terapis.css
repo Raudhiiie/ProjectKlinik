@@ -1,0 +1,25 @@
+.info-box {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+.info-box img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    margin-right: 1rem;
+}
+
+
+.badge-status {
+    font-size: 0.75rem;
+    padding: 4px 6px;
+    border-radius: 4px;
+}
+
+

@@ -11,54 +11,38 @@ class LayananController extends Controller
     public function index()
     {
         $layanans = Layanan::with('subLayanans')->get();
-
-        return response()->json([
-            'success' => true,
-            'data' => $layanans,
-        ]);
+        return view('terapis.layanan.index', compact('layanans'));
     }
 
-    // Simpan layanan utama
+    public function create()
+    {
+        return view('terapis.layanan.tambah');
+    }
+
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required|string|unique:layanans,nama',
+            'nama_layanan' => 'required|string',
+            'sublayanans.*.nama' => 'required|string',
+            'sublayanans.*.harga' => 'required|integer',
         ]);
 
-        $layanan = Layanan::create(['nama' => $request->nama]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Layanan utama berhasil dibuat',
-            'data' => $layanan,
-        ], 201);
-    }
-
-    // Tambah sub-layanan ke layanan utama
-    public function storeSubLayanan(Request $request, $layananId)
-    {
-        $request->validate([
-            'nama' => 'required|string',
-            'harga' => 'required|integer|min:0',
+        // Simpan layanan
+        $layanan = Layanan::create([
+            'nama' => $request->nama_layanan,
         ]);
 
-        $layanan = Layanan::find($layananId);
-        if (!$layanan) {
-            return response()->json(['success' => false, 'message' => 'Layanan tidak ditemukan'], 404);
+        // Simpan sublayanan
+        foreach ($request->sublayanans as $sub) {
+            $layanan->sublayanans()->create([
+                'nama' => $sub['nama'],
+                'harga' => $sub['harga'],
+            ]);
         }
 
-        $subLayanan = SubLayanan::create([
-            'layanan_id' => $layanan->id,
-            'nama' => $request->nama,
-            'harga' => $request->harga,
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Sub-layanan berhasil dibuat',
-            'data' => $subLayanan,
-        ], 201);
+        return redirect()->route('terapis.layanan.index')->with('success', 'Layanan dan sublayanan berhasil ditambahkan.');
     }
+
 
     // Update layanan utama
     public function update(Request $request, $id)
@@ -69,21 +53,15 @@ class LayananController extends Controller
 
         $layanan = Layanan::find($id);
         if (!$layanan) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Layanan tidak ditemukan',
-            ], 404);
+            return redirect()->route('terapis.layanan.index')->with('error', 'Layanan tidak ditemukan.');
         }
 
         $layanan->nama = $request->nama;
         $layanan->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Layanan utama berhasil diperbarui',
-            'data' => $layanan,
-        ]);
+        return redirect()->route('terapis.layanan.index')->with('success', 'Layanan berhasil diperbarui.');
     }
+
 
     // Hapus layanan utama
     public function destroy($id)
@@ -98,11 +76,32 @@ class LayananController extends Controller
 
         $layanan->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Layanan utama berhasil dihapus',
-        ]);
+        return redirect()->route('terapis.layanan.index')->with('success', 'Layanan berhasil dihapus.');
     }
+
+    public function createSubLayanan($layanan_id)
+    {
+        $layanan = Layanan::findOrFail($layanan_id);
+        return view('terapis.layanan.tambah_sublayanan', compact('layanan'));
+    }
+
+    public function storeSubLayanan(Request $request)
+    {
+        $request->validate([
+            'layanan_id' => 'required|exists:layanans,id',
+            'nama' => 'required|string',
+            'harga' => 'required|integer',
+        ]);
+
+        SubLayanan::create([
+            'layanan_id' => $request->layanan_id,
+            'nama' => $request->nama,
+            'harga' => $request->harga,
+        ]);
+
+        return redirect()->route('terapis.layanan.index')->with('success', 'Sub layanan berhasil ditambahkan.');
+    }
+
 
     // Update sub-layanan
     public function updateSubLayanan(Request $request, $id)
@@ -124,11 +123,7 @@ class LayananController extends Controller
         $subLayanan->harga = $request->harga;
         $subLayanan->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Sub-layanan berhasil diperbarui',
-            'data' => $subLayanan,
-        ]);
+        return redirect()->route('terapis.layanan.index')->with('success', 'Layanan berhasil diperbarui.');
     }
 
     // Hapus sub-layanan
@@ -144,9 +139,6 @@ class LayananController extends Controller
 
         $subLayanan->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Sub-layanan berhasil dihapus',
-        ]);
+        return redirect()->route('terapis.layanan.index')->with('success', 'Sub layanan berhasil dihapus.');
     }
 }

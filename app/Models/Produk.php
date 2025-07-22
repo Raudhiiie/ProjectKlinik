@@ -15,5 +15,18 @@ class Produk extends Model
         'out',
         'sisa',
         'posisi',
+        'terapis_id',
+        'harga'
     ];
+
+    public function terapis()
+{
+    return $this->belongsTo(Terapis::class);
+}
+
+public function transaksiDetails()
+    {
+        return $this->hasMany(TransaksiDetail::class);
+    }
+
 }

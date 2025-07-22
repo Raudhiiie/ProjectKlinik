@@ -4,49 +4,63 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Produk;
+use App\Models\Terapis;
+
 use Illuminate\Http\Request;
 
 class ProdukController extends Controller
 {
-    
+
 
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    // Menampilkan Produk Gudang
+    public function index(Request $request, $posisi)
     {
-        $produk = Produk::latest()->paginate(10);
+        // Mulai query
+        $query = Produk::where('posisi', $posisi)->orderBy('tanggal', 'desc');
 
-        return response()->json([
-            'success' => true,
-            'message' => 'List Data Produk',
-            'data' => $produk
-        ]);
+        // Jika ada request filter nama_produk
+        if ($request->has('nama_produk') && $request->nama_produk != '') {
+            $query->where('nama_produk', $request->nama_produk);
+        }
 
-        //     $pasien = Pasien::latest()->paginate(10);
-        //     return view('pasien.index', compact('pasien'));
+        $produk = $query->get();
+
+        // Arahkan ke view sesuai posisi
+        if (in_array($posisi, ['gudang', 'cabin', 'cream'])) {
+            return view("terapis.produk.$posisi.index", compact('produk', 'posisi'));
+        } else {
+            abort(404); // jika posisi tidak valid
+        }
     }
+
+
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create($posisi)
     {
-        return view('produk.tambah');
+        $terapis = Terapis::all();
+        return view('terapis.produk.tambah', compact('posisi', 'terapis'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, $posisi)
     {
 
         $request->validate([
             'nama_produk' => 'required',
-            'tanggal' => 'required',
+            'tanggal' => 'required|date',
             'in' => 'required|integer|min:0',
             'out' => 'required|integer|min:0',
             'posisi' => 'required',
+            'terapis_id' => 'nullable|exists:terapis,id',
+            'harga' => 'nullable|integer|min:0'
         ]);
 
         $sisa = $request->in - $request->out;
@@ -57,49 +71,16 @@ class ProdukController extends Controller
             'in' => $request->in,
             'out' => $request->out,
             'sisa' => $sisa,
-            'posisi' => $request->posisi,
+            'posisi' => strtolower($request->posisi),
+            'terapis_id' => $request->terapis_id,
+            'harga' => $request->harga,
         ]);
 
         if ($produk) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Data Berhasil Disimpan!',
-                'data' => $produk
-            ], 201);
+            return redirect()->route('terapis.produk.index', $posisi)->with(['success' => 'Data Berhasil Disimpan!']);
         } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Data Gagal Disimpan!',
-            ], 500);
+            return redirect()->route('terapis.produk.index', $posisi)->with(['error' => 'Data Gagal Disimpan!']);
         }
-        // $request->validate([
-        //     'no_rm' => 'required',
-        //     'nama' => 'required',
-        //     'nik' => 'required',
-        //     'alamat' => 'required',
-        //     'pekerjaan' => 'required',
-        //     'jenis_kelamin' => 'required',
-        //     'tanggal_lahir' => 'required',
-        //     'no_hp' => 'required',
-        // ]);
-
-        // $pasien = Pasien::create([
-
-        //     'no_rm' => $request->no_rm,
-        //     'nama' => $request->nama,
-        //     'nik' => $request->nik,
-        //     'alamat' => $request->alamat,
-        //     'pekerjaan' => $request->pekerjaan,
-        //     'jenis_kelamin' => $request->jenis_kelamin,
-        //     'tanggal_lahir' => $request->tanggal_lahir,
-        //     'no_hp' => $request->no_hp,
-
-        // ]);
-        // if ($pasien) {
-        //     return redirect()->route('pasien.index')->with(['success' => 'Data Berhasil Disimpan!']);
-        // } else {
-        //     return redirect()->route('pasien.index')->with(['error' => 'Data Gagal Disimpan!']);
-        // }
     }
 
     /**
@@ -113,32 +94,29 @@ class ProdukController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
+    public function edit($posisi, $id)
     {
-        $produk = Produk::find($id);
-        return view('produk.update', compact('produk'));
+        $produk = Produk::findOrFail($id); // pastikan produk ditemukan
+        $terapis = Terapis::all();
+
+        return view('terapis.produk.update', compact('produk', 'posisi', 'terapis'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $posisi, $id)
     {
         $produk = Produk::findOrFail($id);
 
-        if (!$produk) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Produk tidak ditemukan.',
-            ], 404);
-        }
-
         $request->validate([
             'nama_produk' => 'required',
-            'tanggal' => 'required',
+            'tanggal' => 'required|date',
             'in' => 'required|integer|min:0',
             'out' => 'required|integer|min:0',
             'posisi' => 'required',
+            'terapis_id' => 'nullable|exists:terapis,id',
+            'harga' => 'nullable|integer|min:0'
         ]);
 
         $sisa = $request->in - $request->out;
@@ -149,39 +127,18 @@ class ProdukController extends Controller
             'in' => $request->in,
             'out' => $request->out,
             'sisa' => $sisa,
-            'posisi' => $request->posisi,
+            'posisi' => strtolower($request->posisi),
+            'terapis_id' => $request->terapis_id,
+            'harga' => $request->harga,
         ]);
 
         if ($updated) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Data produk berhasil diperbarui',
-                'data' => $produk,
-            ]);
+            return redirect()->route('terapis.produk.index', ['posisi' => strtolower($posisi)])
+                ->with(['success' => 'Data produk berhasil diperbarui!']);
         } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal memperbarui data produk',
-            ]);
+            return redirect()->route('terapis.produk.index', ['posisi' => strtolower($posisi)])
+                ->with(['error' => 'Gagal memperbarui data produk!']);
         }
-
-        // $pasien = Pasien::findOrFail($no_rm);
-
-        // $pasien->update([
-        //     'nama' => $request->nama,
-        //     'nik' => $request->nik,
-        //     'alamat' => $request->alamat,
-        //     'pekerjaan' => $request->pekerjaan,
-        //     'jenis_kelamin' => $request->jenis_kelamin,
-        //     'tanggal_lahir' => $request->tanggal_lahir,
-        //     'no_hp' => $request->no_hp,
-        // ]);
-
-        // if ($pasien) {
-        //     return redirect()->route('pasien.index')->with(['success' => 'Data Berhasil Diubah!']);
-        // } else {
-        //     return redirect()->route('pasien.index')->with(['error' => 'Data Gagal Diubah!']);
-        // }
     }
 
     /**
@@ -190,7 +147,7 @@ class ProdukController extends Controller
     public function destroy($id)
     {
         $produk = Produk::findOrFail($id);
-        $produk ->delete();
+        $produk->delete();
         if ($produk) {
             return response()->json([
                 'status' => 200,
@@ -211,5 +168,4 @@ class ProdukController extends Controller
         //     return redirect()->route('pasien.index')->with(['error' => 'Data Gagal Dihapus!']);
         // }
     }
-
 }
