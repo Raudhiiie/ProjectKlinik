@@ -116,11 +116,19 @@
                                         <i class="fas fa-print"></i>
                                     </a>
                                     <a href="{{ route('terapis.transaksi.tambah.produk', $t->id) }}"
-
                                         class="btn btn-sm btn-success">
                                         + Produk
                                     </a>
-
+                                    <!-- -- Delete -- -->
+                                    <a href="#" onclick="confirmDelete('{{ $t->id}}')" class="btn btn-sm btn-danger" title="Delete">
+                                        <i class="fas fa-trash"></i> Hapus
+                                    </a>
+                                    <form id="deleteForm{{ $t->id }}"
+                                        action="{{ route('terapis.transaksi.destroy', $t->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" style="display: none;"></button>
+                                    </form>
                                 </td>
                             </tr>
                         @endforeach
@@ -250,5 +258,21 @@
             }
 
         });
+
+        function confirmDelete(no_rm) {
+            Swal.fire({
+                title: 'Yakin ingin menghapus?',
+                text: "Data tidak bisa dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Hapus!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm' + no_rm).submit();
+                }
+            });
+        }
     </script>
 @endsection
