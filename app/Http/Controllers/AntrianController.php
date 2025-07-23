@@ -147,12 +147,13 @@ class AntrianController extends Controller
     {
         $today = Carbon::today()->toDateString();
 
-        $antrianDipanggil = Antrian::whereDate('tanggal', $today)
-            ->where('status_panggil', 'Dipanggil')
+        $antrianDipanggil = Antrian::whereDate('tanggal', today())
+            ->where('status', 'proses')
             ->orderByDesc('updated_at')
             ->first();
 
-        $antrianSelanjutnya = Antrian::whereDate('tanggal', $today)
+        $antrianSelanjutnya = Antrian::whereDate('tanggal', today())
+            ->where('status', 'menunggu')
             ->where('status_panggil', 'Belum Dipanggil')
             ->orderBy('no_antrian')
             ->take(5)

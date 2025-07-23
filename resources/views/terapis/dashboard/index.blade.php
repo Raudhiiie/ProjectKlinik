@@ -51,10 +51,9 @@
                             <tr>
                                 <td>
                                     {{ \Carbon\Carbon::parse($data->tanggal)->translatedFormat('j M Y') }}<br>
-                                    {{ $data->jam_mulai }} - {{ $data->jam_selesai }}
                                 </td>
                                 <td>
-                                    {{ $data->nomor_antrian }} ({{ $data->jam_slot }}) <br>
+                                    {{ str_pad($data->no_antrian, 3, '0', STR_PAD_LEFT) }} <br>
                                     <span class="badge badge-secondary badge-status">{{ ucfirst($data->status) }}</span>
                                 </td>
                                 <td>

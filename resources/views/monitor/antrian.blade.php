@@ -34,13 +34,16 @@
                 </div>
 
                 <div class="waiting-list">
-                    @foreach ($antrianSelanjutnya as $item)
+                    @forelse ($antrianSelanjutnya as $item)
                         <div class="waiting-item">
                             {{ str_pad($item->no_antrian, 3, '0', STR_PAD_LEFT) }}
                             <small>Menunggu</small>
                         </div>
-                    @endforeach
+                    @empty
+                        <div class="waiting-item">Tidak ada antrian</div>
+                    @endforelse
                 </div>
+
             </div>
 
             <div class="right-box">

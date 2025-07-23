@@ -16,9 +16,10 @@ class LaporanKeuanganController extends Controller
         DB::raw("SUM(CASE WHEN metode_pembayaran = 'qris' THEN total_harga ELSE 0 END) AS qris"),
         DB::raw("SUM(CASE WHEN metode_pembayaran = 'cash' THEN total_harga ELSE 0 END) AS cash"),
         DB::raw("SUM(total_harga) as pendapatan")
-    );
+    )
+    ->where('keterangan', 'Lunas');
 
-    // Jika ada filter tanggal
+    //filter tanggal
     if ($request->filled('tanggal_mulai') && $request->filled('tanggal_selesai')) {
         $query->whereBetween('tanggal', [$request->tanggal_mulai, $request->tanggal_selesai]);
     }
