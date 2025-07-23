@@ -61,12 +61,17 @@ class TransaksiController extends Controller
             // Hitung total
             $total = collect($request->items)->sum(function ($item) {
                 if ($item['jenis'] == 'layanan') {
-                    $harga = SubLayanan::find($item['id'])->harga;
+                    $subLayanan = SubLayanan::find($item['id']);
+                    if (!$subLayanan) return 0;
+                    $harga = $subLayanan->harga;
                 } else {
-                    $harga = Produk::find($item['id'])->harga;
+                    $produk = Produk::find($item['id']);
+                    if (!$produk) return 0;
+                    $harga = $produk->harga;
                 }
                 return $harga * $item['jumlah'];
             });
+
 
             // Buat transaksi
             $transaksi = Transaksi::create([
@@ -80,10 +85,11 @@ class TransaksiController extends Controller
             // Simpan detail transaksi
             foreach ($request->items as $item) {
                 if ($item['jenis'] == 'layanan') {
-                    $harga = SubLayanan::find($item['id'])->harga;
+                    $subLayanan = SubLayanan::find($item['id']);
+                    $harga = $subLayanan->harga;
                     $transaksi->details()->create([
                         'jenis' => 'layanan',
-                        'layanan_id' => $item['id'],
+                        'sub_layanan_id' => $subLayanan['id'],
                         'jumlah' => $item['jumlah'],
                         'harga_satuan' => $harga,
                         'subtotal' => $harga * $item['jumlah']
@@ -253,4 +259,40 @@ class TransaksiController extends Controller
         return redirect()->route('transaksi.index')
             ->with('success', 'Pembayaran berhasil dicatat');
     }
+
+    public function tambahProduk($id)
+{
+    $transaksi = Transaksi::with('details')->findOrFail($id);
+    $produk = Produk::all();
+
+    return view('terapis.transaksi.tambah_produk', compact('transaksi', 'produk'));
 }
+
+public function simpanProduk(Request $request, $id)
+{
+    $request->validate([
+        'produk_id' => 'required|exists:produks,id',
+        'jumlah' => 'required|integer|min:1',
+    ]);
+
+    $transaksi = Transaksi::findOrFail($id);
+    $produk = Produk::findOrFail($request->produk_id);
+    $subtotal = $produk->harga * $request->jumlah;
+
+    // Tambahkan detail produk
+    $transaksi->details()->create([
+        'jenis' => 'produk',
+        'produk_id' => $produk->id,
+        'jumlah' => $request->jumlah,
+        'harga_satuan' => $produk->harga,
+        'subtotal' => $subtotal
+    ]);
+
+    // Update total transaksi
+    $transaksi->calculateTotal(); // method dari model Transaksi
+
+    return redirect()->route('terapis.transaksi.index')->with('success', 'Produk berhasil ditambahkan ke transaksi.');
+}
+
+}
+

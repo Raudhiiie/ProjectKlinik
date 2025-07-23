@@ -76,7 +76,8 @@
                                     <ul class="mb-0 pl-3">
                                         @foreach ($t->details as $d)
                                             <li>
-                                                @if($d->jenis == 'layanan')
+                                                @if(strtolower($d->jenis) == 'layanan')
+
                                                     {{ $d->subLayanan->layanan->nama ?? '-' }} - {{ $d->subLayanan->nama ?? '-' }}
                                                 @else
                                                     {{ $d->produk->nama_produk ?? '-' }}
@@ -114,6 +115,12 @@
                                         target="_blank">
                                         <i class="fas fa-print"></i>
                                     </a>
+                                    <a href="{{ route('terapis.transaksi.tambah.produk', $t->id) }}"
+
+                                        class="btn btn-sm btn-success">
+                                        + Produk
+                                    </a>
+
                                 </td>
                             </tr>
                         @endforeach

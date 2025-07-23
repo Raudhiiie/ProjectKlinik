@@ -54,6 +54,9 @@ Route::prefix('terapis')->name('terapis.')->group(function () {
         ->name('transaksi.bayar');
     Route::post('/transaksi/{id}/konfirmasi', [TransaksiController::class, 'konfirmasi'])
         ->name('transaksi.konfirmasi');
+    Route::get('transaksi/{id}/tambah-produk', [TransaksiController::class, 'tambahProduk'])->name('transaksi.tambah.produk');
+    Route::post('transaksi/{id}/tambah-produk', [TransaksiController::class, 'simpanProduk'])->name('transaksi.tambah.produk');
+
 
     Route::get('/transaksi/{id}/cetak', [TransaksiController::class, 'cetak'])
         ->name('transaksi.cetak');

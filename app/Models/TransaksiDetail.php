@@ -12,7 +12,7 @@ class TransaksiDetail extends Model
     protected $fillable = [
         'transaksi_id',
         'jenis',
-        'layanan_id',
+        'sub_layanan_id',
         'produk_id',
         'jumlah',
         'harga_satuan',
@@ -23,7 +23,7 @@ class TransaksiDetail extends Model
 
     public function subLayanan()
     {
-        return $this->belongsTo(SubLayanan::class);
+        return $this->belongsTo(SubLayanan::class, 'sub_layanan_id');
     }
 
     public function produk()

@@ -94,7 +94,7 @@ class rekamMedisController extends Controller
                 TransaksiDetail::create([
                     'transaksi_id' => $transaksi->id,
                     'jenis' => 'layanan',
-                    'layanan_id' => $sub->id,
+                    'sub_layanan_id' => $sub->id,
                     'jumlah' => 1,
                     'harga_satuan' => $sub->harga,
                     'subtotal' => $sub->harga,
@@ -105,7 +105,7 @@ class rekamMedisController extends Controller
             }
 
             // 3. Update total transaksi
-            $transaksi->update(['total' => $total]);
+            $transaksi->update(['total_harga' => $total]);
 
             DB::commit();
             return redirect()->route('dokter.rekamMedis.index')->with('success', 'Data berhasil disimpan');
@@ -190,7 +190,7 @@ class rekamMedisController extends Controller
             Transaksi::create([
                 'rekam_medis_id' => $rekamMedis->id,
                 'tanggal' => now(),
-                'total' => $total,
+                'total_harga' => $total,
                 'status' => 'belum bayar', // default
             ]);
 
