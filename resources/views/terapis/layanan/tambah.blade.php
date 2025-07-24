@@ -1,9 +1,4 @@
 @extends('template.master')
-
-@section('css')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-@endsection
-
 @section('content')
 <br>
 <div class="col">
@@ -38,7 +33,7 @@
                     </div>
                 </div>
 
-                <button type="button" class="btn btn-secondary btn-sm" id="addSubLayanan">+ Tambah Sub Layanan</button>
+                <button type="button" class="btn btn-pink btn-sm" id="addSubLayanan">+ Tambah Sub Layanan</button>
             </div>
 
             <div class="card-footer">

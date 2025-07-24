@@ -10,43 +10,35 @@
             @csrf
             <div class="card-body">
                 <div class="row">
-                    <div class="col col-md-12 form-group">
+                    <div class="col-md-6 form-group">
                         <label>Nama</label>
                         <input type="text" class="form-control" id="nama" name="nama" placeholder="Masukkan Nama" required>
-
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col col-md-12 form-group">
+                    <div class="col-md-6 form-group">
                         <label>Alamat</label>
                         <input type="text" class="form-control" id="alamat" name="alamat" placeholder="Masukkan Alamat" required>
-
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col col-md-12 form-group">
+                    <div class="col-md-6 form-group">
                         <label>No HP</label>
                         <input type="text" class="form-control" id="no_hp" name="no_hp" placeholder="Masukkan No HP" required>
-
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col col-md-12 form-group">
+                    <div class="col-md-6 form-group">
                         <label>Tanggal Lahir</label>
-                        <input type="date" class="form-control" id="tanggal_lahir" name="tanggal_lahir" placeholder="Masukkan Tanggal Lahir" required>
-
+                        <input type="date" class="form-control" id="tanggal_lahir" name="tanggal_lahir" required>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col col-md-12 form-group">
+                    <div class="col-md-6 form-group">
                         <label>Tanggal Bergabung</label>
-                        <input type="date" class="form-control" id="tanggal_bergabung" name="tanggal_bergabung" placeholder="Masukkan Tanggal Bergabung" required>
-
+                        <input type="date" class="form-control" id="tanggal_bergabung" name="tanggal_bergabung" required>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-pink">Tambah</button>
-                </div>
+            </div>
+            <div class="card-footer text-right">
+                <button type="submit" class="btn btn-pink">Tambah</button>
+            </div>
         </form>
     </div>
 </div>
@@ -77,11 +69,12 @@
         $('#deskripsi_form').summernote();
     });
 </script>
-
 @endsection
+
 @section('css')
 <link rel="stylesheet" href="{{ url('plugins/summernote/summernote-bs4.min.css') }}">
 @endsection
+
 @section('js')
 <script src="{{ url('plugins/summernote/summernote-bs4.min.js') }}"></script>
 @endsection

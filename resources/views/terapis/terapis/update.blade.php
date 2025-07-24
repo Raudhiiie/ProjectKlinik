@@ -1,4 +1,5 @@
 @extends('template/master')
+
 @section('content')
 <br>
 <div class="col">
@@ -11,47 +12,40 @@
             @method('PUT')
             <div class="card-body">
                 <div class="row">
-                    <div class="col col-md-12 form-group">
+                    <div class="col-md-6 form-group">
                         <label>Nama</label>
-                        <input type="text" class="form-control" id="nama" name="nama" value="{{ $terapis->nama}}">
+                        <input type="text" class="form-control" id="nama" name="nama" value="{{ old('nama', $terapis->nama) }}" placeholder="Masukkan Nama" required>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col col-md-12 form-group">
+                    <div class="col-md-6 form-group">
                         <label>Alamat</label>
-                        <input type="text" class="form-control" id="alamat" name="alamat" value="{{ $terapis->alamat}}">
+                        <input type="text" class="form-control" id="alamat" name="alamat" value="{{ old('alamat', $terapis->alamat) }}" placeholder="Masukkan Alamat" required>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col col-md-12 form-group">
+                    <div class="col-md-6 form-group">
                         <label>No HP</label>
-                        <input type="text" class="form-control" id="no_hp" name="no_hp" value="{{ $terapis->no_hp}}">
+                        <input type="text" class="form-control" id="no_hp" name="no_hp" value="{{ old('no_hp', $terapis->no_hp) }}" placeholder="Masukkan No HP" required>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col col-md-12 form-group">
+                    <div class="col-md-6 form-group">
                         <label>Tanggal Lahir</label>
-                        <input type="date" class="form-control" id="tanggal_lahir" name="tanggal_lahir" value="{{ $terapis->tanggal_lahir}}">
+                        <input type="date" class="form-control" id="tanggal_lahir" name="tanggal_lahir" value="{{ old('tanggal_lahir', $terapis->tanggal_lahir) }}" required>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col col-md-12 form-group">
+                    <div class="col-md-6 form-group">
                         <label>Tanggal Bergabung</label>
-                        <input type="date" class="form-control" id="tanggal_bergabung" name="tanggal_bergabung" value="{{ $terapis->tanggal_bergabung}}">
+                        <input type="date" class="form-control" id="tanggal_bergabung" name="tanggal_bergabung" value="{{ old('tanggal_bergabung', $terapis->tanggal_bergabung) }}" required>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-pink">Update</button>
-                </div>
+            </div>
+            <div class="card-footer text-right">
+                <button type="submit" class="btn btn-pink">Update</button>
+            </div>
         </form>
     </div>
 </div>
 
 <script>
-    $(function() {
-        $('#deskripsi_form').summernote();
-    });
-
     function formatDate(inputId, outputId) {
         const input = document.getElementById(inputId);
         const output = document.getElementById(outputId);
@@ -72,12 +66,17 @@
     }
 
     formatDate('tanggal_lahir', 'formattedTanggalLahir');
-</script>
 
+    $(function() {
+        $('#deskripsi_form').summernote();
+    });
+</script>
 @endsection
+
 @section('css')
 <link rel="stylesheet" href="{{ url('plugins/summernote/summernote-bs4.min.css') }}">
 @endsection
+
 @section('js')
 <script src="{{ url('plugins/summernote/summernote-bs4.min.js') }}"></script>
 @endsection
