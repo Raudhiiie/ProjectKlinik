@@ -53,6 +53,8 @@
                                 <td>{{ $data->pasien->nama }}</td>
                                 {{-- <td>{{ \Carbon\Carbon::parse($data->pasien->tanggal_terakhir)->format('d-m-Y') }}</td> --}}
                                 <td>{{ $data->keluhan }}</td>
+                                <td>{{ $data->obat }}</td>
+                                <td>{{ $data->terapis->nama }}</td>
                                 <td>
                                     @foreach ($data->details as $detail)
                                         {{ $detail->sublayanan->layanan->nama ?? '-' }}<br>
