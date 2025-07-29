@@ -38,9 +38,9 @@ class AntrianController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'no_rm' => 'required|exists:pasiens,no_rm',
-        ]);
+        // $request->validate([
+        //     'no_rm' => 'required|exists:pasiens,no_rm',
+        // ]);
 
         $tanggalHariIni = Carbon::today()->toDateString();
 
