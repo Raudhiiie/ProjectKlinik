@@ -36,7 +36,7 @@
                     <thead>
                         <tr>
                             <th style="text-align: center;">No RM</th>
-                            <th style="text-align: center;">Tanggal</th>
+                            <th style="text-align: center;">Tanggal Kunjungan Terakhir</th>
                             <th style="text-align: center;">Nama</th>
                             <th style="text-align: center;">Keluhan</th>
                             <th style="text-align: center;">Tindakan</th>
@@ -50,7 +50,7 @@
                             <tr>
                                 <td>{{ $data->no_rm }}</td>
                                 <td>{{ $data->tanggal }}</td>
-                                <td>{{ $data->pasien->nama }}</td>
+                                <td>{{ \Carbon\Carbon::parse($data->pasien->tanggal_terakhir)->format('d-m-Y') }}</td>
                                 <td>{{ $data->keluhan }}</td>
                                 <td>
                                     @foreach ($data->details as $detail)

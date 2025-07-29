@@ -17,8 +17,15 @@ class rekamMedisController extends Controller
 {
     public function index()
     {
-        // Ambil semua data rekam medis dan eager load data pasien (relasi)
-        $rekamMedis = RekamMedis::with(['pasien', 'terapis', 'details.sublayanan.layanan'])->get();
+        // // Ambil semua data rekam medis dan eager load data pasien (relasi)
+        // $rekamMedis = RekamMedis::with(['pasien', 'terapis', 'details.sublayanan.layanan'])->get();
+
+        $rekamMedis = RekamMedis::with('pasien')
+            ->select('no_rm', DB::raw('MAX(tanggal) as tanggal_terakhir'))
+            ->groupBy('no_rm')
+            ->orderByDesc('tanggal_terakhir')
+            ->get();
+
 
         return view('dokter.rekamMedis.index', compact('rekamMedis'));
     }
