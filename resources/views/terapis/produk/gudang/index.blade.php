@@ -78,7 +78,7 @@
                     <tr>
                         <td>{{ $key + 1 }}</td>
                         <td>{{ $data->nama_produk }}</td>
-                        <td>{{ $data->tanggal }}</td>
+                        <td>{{ \Carbon\Carbon::parse($data->tanggal)->format('d-m-Y') }}</td>
                         <td>{{ $data->in }}</td>
                         <td>{{ $data->out }}</td>
                         <td>{{ $data->sisa }}</td>

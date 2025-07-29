@@ -58,7 +58,7 @@
                                 <td>{{ $data->alamat }}</td>
                                 <td>{{ $data->pekerjaan }}</td>
                                 <td>{{ $data->jenis_kelamin }}</td>
-                                <td>{{ $data->tanggal_lahir }}</td>
+                                <td>{{ \Carbon\Carbon::parse($data->tanggal_lahir)->format('d-m-Y') }}</td>
                                 <td>{{ $data->no_hp }}</td>
                                 <td class="text-center">
                                     {{ $data->antrians_count > 0 ? $data->antrians_count . ' kali' : 'Belum Pernah' }}

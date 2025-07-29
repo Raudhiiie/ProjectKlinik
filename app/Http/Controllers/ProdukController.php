@@ -23,8 +23,9 @@ class ProdukController extends Controller
 
         // Jika ada request filter nama_produk
         if ($request->has('nama_produk') && $request->nama_produk != '') {
-            $query->where('nama_produk', $request->nama_produk);
+            $query->whereRaw('LOWER(nama_produk) = ?', [strtolower($request->nama_produk)]);
         }
+
 
         $produk = $query->get();
 
@@ -52,7 +53,6 @@ class ProdukController extends Controller
      */
     public function store(Request $request, $posisi)
     {
-
         $request->validate([
             'nama_produk' => 'required',
             'tanggal' => 'required|date',
@@ -63,17 +63,72 @@ class ProdukController extends Controller
             'harga' => 'nullable|integer|min:0'
         ]);
 
-        $sisa = $request->in - $request->out;
+        // Jika cabin atau cream, ambil dari gudang
+        if (in_array(strtolower($request->posisi), ['cabin', 'cream'])) {
+            $stokGudang = Produk::where('posisi', 'gudang')
+                ->whereRaw('LOWER(nama_produk) = ?', [strtolower($request->nama_produk)])
+                ->orderByDesc('tanggal')
+                ->first();
+
+            if (!$stokGudang || $stokGudang->sisa < $request->in) {
+                return redirect()->back()->with('error', 'Stok di Gudang tidak mencukupi untuk transfer ke ' . $request->posisi);
+            }
+
+            // Kurangi stok di gudang
+            Produk::create([
+                'nama_produk' => $request->nama_produk,
+                'tanggal' => $request->tanggal,
+                'in' => 0,
+                'out' => $request->in,
+                'sisa' => $stokGudang->sisa - $request->in,
+                'posisi' => 'gudang',
+                'harga' => $stokGudang->harga, // Harga tetap disimpan untuk catatan historis
+            ]);
+            $hargaFinal = $stokGudang->harga ?? 0; // fallback kalau kosong
+        } else {
+            // Jika gudang, ambil dari input user
+            $hargaFinal = $request->harga;
+        }
+
+
+        // Hitung sisa posisi target (cabin/cream/gudang)
+        $stokTerakhir = Produk::where('posisi', strtolower($request->posisi))
+            ->whereRaw('LOWER(nama_produk) = ?', [strtolower($request->nama_produk)])
+            ->orderByDesc('tanggal')
+            ->first();
+
+        $sisaSebelumnya = $stokTerakhir ? $stokTerakhir->sisa : 0;
+        $sisa = $sisaSebelumnya + $request->in - $request->out;
+
+        // Cek data dengan nama_produk, tanggal, dan posisi sudah ada
+        $existingProduk = Produk::whereRaw('LOWER(nama_produk) = ?', [strtolower($request->nama_produk)])
+            ->where('tanggal', $request->tanggal)
+            ->where('posisi', strtolower($request->posisi))
+            ->first();
+
+        if ($existingProduk) {
+            // Update stok lama
+            $existingProduk->in += $request->in;
+            $existingProduk->out += $request->out;
+            $existingProduk->sisa = $existingProduk->sisa + $request->in - $request->out;
+            $existingProduk->sisa = max($existingProduk->sisa, 0); // jangan sampai minus
+            $existingProduk->terapis_id = $request->terapis_id ?? $existingProduk->terapis_id;
+            $existingProduk->harga = $hargaFinal ?? $existingProduk->harga;
+            $existingProduk->save();
+
+            return redirect()->route('terapis.produk.index', $posisi)->with(['success' => 'Data Berhasil Diupdate!']);
+        }
+
 
         $produk = Produk::create([
             'nama_produk' => $request->nama_produk,
             'tanggal' => $request->tanggal,
             'in' => $request->in,
             'out' => $request->out,
-            'sisa' => $sisa,
+            'sisa' => $sisa < 0 ? 0 : $sisa,
             'posisi' => strtolower($request->posisi),
             'terapis_id' => $request->terapis_id,
-            'harga' => $request->harga,
+            'harga' => $hargaFinal,
         ]);
 
         if ($produk) {
@@ -82,6 +137,7 @@ class ProdukController extends Controller
             return redirect()->route('terapis.produk.index', $posisi)->with(['error' => 'Data Gagal Disimpan!']);
         }
     }
+
 
     /**
      * Display the specified resource.
@@ -141,26 +197,16 @@ class ProdukController extends Controller
         }
     }
 
+
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy($posisi, $id)
     {
         $produk = Produk::findOrFail($id);
         $produk->delete();
-        if ($produk) {
-            return response()->json([
-                'status' => 200,
-                'success' => true,
-                'message' => 'Data Berhasil Dihapus!',
-            ], 200);
-        } else {
-            return response()->json([
-                'status' => 500,
-                'success' => false,
-                'message' => 'Data Berhasil Dihapus!',
-            ], 500);
-        }
+
+        return redirect()->route('terapis.produk.index', ['posisi' => strtolower($posisi)])->with('success', 'Produk berhasil dihapus.');
 
         // if ($pasien) {
         //     return redirect()->route('pasien.index')->with(['success' => 'Data Berhasil Dihapus!']);

@@ -37,10 +37,15 @@ class TransaksiController extends Controller
     public function create()
     {
         $pasiens = Pasien::orderBy('nama')->get();
-        $subLayanan = SubLayanan::orderBy('nama')->get();
+        $subLayanan = SubLayanan::with('layanan')->orderBy('nama')->get();
+        $subLayananGroup = $subLayanan->groupBy(function ($item) {
+            return $item->layanan->nama;
+        });
         $produk = Produk::orderBy('nama_produk')->get();
         $terapis = Terapis::all();
-        return view('terapis.transaksi.tambah', compact('pasiens', 'subLayanan', 'produk', 'terapis'));
+
+
+        return view('terapis.transaksi.tambah', compact('pasiens', 'subLayananGroup', 'produk', 'terapis'));
     }
 
     public function store(Request $request)
@@ -65,7 +70,7 @@ class TransaksiController extends Controller
                     if (!$subLayanan) return 0;
                     $harga = $subLayanan->harga;
                 } else {
-                    $produk = Produk::find($item['id']);
+                    $produk = Produk::whereIn('posisi', ['cabin', 'cream'])->find($item['id']);
                     if (!$produk) return 0;
                     $harga = $produk->harga;
                 }
@@ -261,38 +266,39 @@ class TransaksiController extends Controller
     }
 
     public function tambahProduk($id)
-{
-    $transaksi = Transaksi::with('details')->findOrFail($id);
-    $produk = Produk::all();
+    {
+        $transaksi = Transaksi::with('details')->findOrFail($id);
+        $produk = Produk::whereIn('posisi', ['cabin', 'cream'])->get();
 
-    return view('terapis.transaksi.tambah_produk', compact('transaksi', 'produk'));
+
+        return view('terapis.transaksi.tambah_produk', compact('transaksi', 'produk'));
+    }
+
+    public function simpanProduk(Request $request, $id)
+    {
+        $request->validate([
+            'produk_id' => 'required|exists:produks,id',
+            'jumlah' => 'required|integer|min:1',
+        ]);
+
+        $transaksi = Transaksi::findOrFail($id);
+        $produk = Produk::whereIn('posisi', ['cabin', 'cream'])
+            ->findOrFail($request->produk_id);
+
+        $subtotal = $produk->harga * $request->jumlah;
+
+        // Tambahkan detail produk
+        $transaksi->details()->create([
+            'jenis' => 'produk',
+            'produk_id' => $produk->id,
+            'jumlah' => $request->jumlah,
+            'harga_satuan' => $produk->harga,
+            'subtotal' => $subtotal
+        ]);
+
+        // Update total transaksi
+        $transaksi->calculateTotal(); // method dari model Transaksi
+
+        return redirect()->route('terapis.transaksi.index')->with('success', 'Produk berhasil ditambahkan ke transaksi.');
+    }
 }
-
-public function simpanProduk(Request $request, $id)
-{
-    $request->validate([
-        'produk_id' => 'required|exists:produks,id',
-        'jumlah' => 'required|integer|min:1',
-    ]);
-
-    $transaksi = Transaksi::findOrFail($id);
-    $produk = Produk::findOrFail($request->produk_id);
-    $subtotal = $produk->harga * $request->jumlah;
-
-    // Tambahkan detail produk
-    $transaksi->details()->create([
-        'jenis' => 'produk',
-        'produk_id' => $produk->id,
-        'jumlah' => $request->jumlah,
-        'harga_satuan' => $produk->harga,
-        'subtotal' => $subtotal
-    ]);
-
-    // Update total transaksi
-    $transaksi->calculateTotal(); // method dari model Transaksi
-
-    return redirect()->route('terapis.transaksi.index')->with('success', 'Produk berhasil ditambahkan ke transaksi.');
-}
-
-}
-

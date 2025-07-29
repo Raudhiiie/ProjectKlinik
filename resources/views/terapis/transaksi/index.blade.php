@@ -70,7 +70,7 @@
                         @foreach ($transaksi as $t)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $t->tanggal }}</td>
+                                <td>{{ \Carbon\Carbon::parse($t->tanggal)->format('d-m-Y') }}</td>
                                 <td>{{ $t->pasien->nama ?? '-' }}</td>
                                 <td>
                                     <ul class="mb-0 pl-3">
@@ -120,11 +120,12 @@
                                         + Produk
                                     </a>
                                     <!-- -- Delete -- -->
-                                    <a href="#" onclick="confirmDelete('{{ $t->id}}')" class="btn btn-sm btn-danger" title="Delete">
+                                    <a href="#" onclick="confirmDelete('{{ $t->id}}')" class="btn btn-sm btn-danger"
+                                        title="Delete">
                                         <i class="fas fa-trash"></i> Hapus
                                     </a>
-                                    <form id="deleteForm{{ $t->id }}"
-                                        action="{{ route('terapis.transaksi.destroy', $t->id) }}" method="POST">
+                                    <form id="deleteForm{{ $t->id }}" action="{{ route('terapis.transaksi.destroy', $t->id) }}"
+                                        method="POST">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" style="display: none;"></button>

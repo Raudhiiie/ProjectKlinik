@@ -50,7 +50,7 @@
                         <td>{{ $data->nama }}</td>
                         <td>{{ $data->alamat }}</td>
                         <td>{{ $data->no_hp }}</td>
-                        <td>{{ $data->tanggal_bergabung}}</td>
+                        <td>{{ \Carbon\Carbon::parse($data->tanggal_bergabung)->format('d-m-Y') }}</td>
                         <td class="text-center">
                             <!-- -- Detail -- -->
                             <a href="{{ route('terapis.terapis.show', ['terapi' => $data->id]) }}" class="text-primary" title="Lihat Detail">

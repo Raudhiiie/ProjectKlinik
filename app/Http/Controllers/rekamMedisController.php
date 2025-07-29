@@ -146,6 +146,7 @@ class rekamMedisController extends Controller
 
         DB::beginTransaction();
         try {
+            // 1. Update Rekam Medis
             $rekamMedis->update([
                 'no_rm' => $request->no_rm,
                 'terapis_id' => $request->terapis_id,
@@ -154,9 +155,12 @@ class rekamMedisController extends Controller
                 'obat' => $request->obat,
             ]);
 
+            // 2. Hapus rekam medis detail lama
             RekamMedisDetail::where('rekam_medis_id', $rekamMedis->id)->delete();
 
+            // 3. Tambahkan detail baru
             $tindakanText = [];
+            $total = 0;
 
             foreach ($request->sub_layanan_ids as $id) {
                 $sub = SubLayanan::with('layanan')->findOrFail($id);
@@ -164,35 +168,59 @@ class rekamMedisController extends Controller
                 RekamMedisDetail::create([
                     'rekam_medis_id' => $rekamMedis->id,
                     'sublayanan_id' => $sub->id,
-                    'harga' => $sub->harga ?? 0,
+                    'harga' => $sub->harga,
                 ]);
 
                 $tindakanText[] = $sub->layanan->nama . ' - ' . $sub->nama;
+                $total += $sub->harga;
             }
 
+            // 4. Update kolom tindakan (text ringkasan)
             $rekamMedis->update([
                 'tindakan' => implode(', ', $tindakanText),
             ]);
 
-            // Simpan detail sublayanan
-            $total = 0;
-            foreach ($request->sublayanan_id as $key => $subId) {
-                $harga = $request->harga[$key];
-                RekamMedisDetail::create([
-                    'rekam_medis_id' => $rekamMedis->id,
-                    'sublayanan_id' => $subId,
-                    'harga' => $harga,
+            // 5. Hapus transaksi lama (jika perlu)
+            $transaksi = Transaksi::where('rekam_medis_id', $rekamMedis->id)->first();
+            if ($transaksi) {
+                TransaksiDetail::where('transaksi_id', $transaksi->id)->delete();
+                $transaksi->update([
+                    'total_harga' => 0, // reset sementara
+                    'tanggal' => now(),
+                    'metode_pembayaran' => $request->input('metode_pembayaran', 'cash'),
+                    'keterangan' => 'Belum Bayar',
+                    'terapis_id' => $request->terapis_id,
+                    'no_rm' => $request->no_rm,
                 ]);
-                $total += $harga;
+            } else {
+                $transaksi = Transaksi::create([
+                    'rekam_medis_id' => $rekamMedis->id,
+                    'tanggal' => now(),
+                    'metode_pembayaran' => $request->input('metode_pembayaran', 'cash'),
+                    'keterangan' => 'Belum Bayar',
+                    'terapis_id' => $request->terapis_id,
+                    'no_rm' => $request->no_rm,
+                    'total_harga' => 0,
+                ]);
             }
 
-            // Simpan transaksi otomatis
-            Transaksi::create([
-                'rekam_medis_id' => $rekamMedis->id,
-                'tanggal' => now(),
-                'total_harga' => $total,
-                'status' => 'belum bayar', // default
-            ]);
+            // 6. Tambahkan detail transaksi
+            foreach ($request->sub_layanan_ids as $id) {
+                $sub = SubLayanan::findOrFail($id);
+
+                TransaksiDetail::create([
+                    'transaksi_id' => $transaksi->id,
+                    'jenis' => 'layanan',
+                    'sub_layanan_id' => $sub->id,
+                    'jumlah' => 1,
+                    'harga_satuan' => $sub->harga,
+                    'subtotal' => $sub->harga,
+                    'terapis_id' => $request->terapis_id,
+                ]);
+            }
+
+            // 7. Update total transaksi
+            $transaksi->update(['total_harga' => $total]);
 
             DB::commit();
             return redirect()->route('dokter.rekamMedis.index')->with('success', 'Data berhasil diperbarui');
@@ -201,6 +229,7 @@ class rekamMedisController extends Controller
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
 
 
     public function destroy($id)

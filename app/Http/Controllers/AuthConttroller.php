@@ -31,7 +31,7 @@ class AuthConttroller extends Controller
         }
 
         return back()->withErrors([
-            'username' => 'Username atau password salah.',
+            'username' => 'Akun belum terdaftar',
         ]);
     }
 

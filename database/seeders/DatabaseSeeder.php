@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'nama' => 'Terapis 1',
+            'nama' => 'Terapis',
             'username' => 'terapis',
             'email' => 'terapis1@example.com',
             'no_hp' => '081234567890',
@@ -27,21 +27,63 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::create([
-            'nama' => 'Dokter 1',
+            'nama' => 'dr. Pretty Diandani',
             'username' => 'dokter',
-            'email' => 'dokter1@example.com',
-            'no_hp' => '089876543210',
+            'email' => 'pretty@gmail.com',
+            'no_hp' => '082284591222',
             'alamat' => 'Jl. Melati No.2',
             'tanggal_lahir' => '1990-02-15',
             'tanggal_bergabung' => now()->toDateString(),
             'password' => Hash::make('dokter'),
             'role' => 'dokter',
         ]);
-        // \App\Models\User::factory(10)->create();
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        User::create([
+            'nama' => 'Nirmala',
+            'username' => 'nirmala',
+            'email' => 'nirmala@gmail.com',
+            'no_hp' => '089654593666',
+            'alamat' => 'Jl. Tegal Sari Km 4 Gg, Cindelaras',
+            'tanggal_lahir' => '2001-11-16',
+            'tanggal_bergabung' => '2025-01-20',
+            'password' => Hash::make('nirmala'),
+            'role' => 'terapis',
+        ]);
+
+        User::create([
+            'nama' => 'Kevina',
+            'username' => 'kevina',
+            'email' => 'kevina@gmail.com',
+            'no_hp' => '082154327765',
+            'alamat' => 'Jl. Cikpuan ',
+            'tanggal_lahir' => '2000-10-10',
+            'tanggal_bergabung' => '2024-03-12',
+            'password' => Hash::make('kevina'),
+            'role' => 'terapis',
+        ]);
+
+        User::create([
+            'nama' => 'Sri Kesuma Astuti',
+            'username' => 'srikesuma',
+            'email' => 'srikesuma@gmail.com',
+            'no_hp' => '082286552320',
+            'alamat' => 'Jl. Sultan Syarif Kasim Gg. rajawali',
+            'tanggal_lahir' => '2001-11-16',
+            'tanggal_bergabung' => '2025-03-21',
+            'password' => Hash::make('srikesuma'),
+            'role' => 'terapis',
+        ]); 
+
+        User::create([
+            'nama' => 'Laura Okta Vanjola',
+            'username' => 'laura',
+            'email' => 'laura@gmail.com',
+            'no_hp' => '081371297754',
+            'alamat' => 'Jl. Mawar',
+            'tanggal_lahir' => '2001-08-11',
+            'tanggal_bergabung' => '2025-03-28',
+            'password' => Hash::make('laura'),
+            'role' => 'terapis',
+        ]); 
     }
 }

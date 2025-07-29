@@ -15,7 +15,7 @@ class PasienController extends Controller
 
     public function index()
     {
-        $pasien = Pasien::withCount('antrians')->latest()->paginate(10);
+        $pasien = Pasien::withCount('antrians')->latest()->get();
 
         return view('terapis.pasien.index', compact('pasien'));
     }

@@ -2,21 +2,22 @@
 
 @section('content')
     <br>
-        @if ($errors->any())
-    <div class="alert alert-danger">
-        <ul class="mb-0">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-@if (session('error'))
-    <div class="alert alert-danger">
-        {{ session('error') }}
-    </div>
-@endif
+    @if (session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="col">
         <div class="card card-pink">
             <div class="card-header">
@@ -27,9 +28,9 @@
                 @method('PUT')
                 <div class="card-body">
 
-                    {{-- No RM --}}
                     <div class="row">
-                        <div class="col-md-12 form-group">
+                        {{-- No RM --}}
+                        <div class="col-md-6 form-group">
                             <label>No RM</label>
                             <select name="no_rm" class="form-control select2" required>
                                 <option value="">-- Pilih Pasien --</option>
@@ -40,77 +41,33 @@
                                 @endforeach
                             </select>
                         </div>
-                    </div>
 
-                    {{-- Tanggal --}}
-                    <div class="row">
-                        <div class="col-md-12 form-group">
+                        {{-- Tanggal --}}
+                        <div class="col-md-6 form-group">
                             <label>Tanggal</label>
-                            <input type="date" class="form-control" name="tanggal" value="{{ $rekamMedis->tanggal }}" required>
+                            <input type="date" class="form-control" name="tanggal" value="{{ $rekamMedis->tanggal }}"
+                                required>
                         </div>
                     </div>
 
-                    {{-- Keluhan --}}
                     <div class="row">
-                        <div class="col-md-12 form-group">
+                        {{-- Keluhan --}}
+                        <div class="col-md-6 form-group">
                             <label>Keluhan</label>
-                            <input type="text" class="form-control" name="keluhan" value="{{ $rekamMedis->keluhan }}" required>
+                            <input type="text" class="form-control" name="keluhan" value="{{ $rekamMedis->keluhan }}"
+                                required>
                         </div>
-                    </div>
 
-                    {{-- Sub Layanan (Tindakan) --}}
-                    <div class="row">
-                        <div class="col-md-12 form-group">
-                            <label>Sub Layanan (Tindakan)</label>
-                            <div class="accordion" id="accordionExample">
-                                @foreach ($layanan as $l)
-                                    <div class="card">
-                                        <div class="card-header" id="heading{{ $l->id }}">
-                                            <h5 class="mb-0">
-                                                <button class="btn btn-link" type="button" data-toggle="collapse"
-                                                    data-target="#collapse{{ $l->id }}" aria-expanded="false"
-                                                    aria-controls="collapse{{ $l->id }}">
-                                                    {{ $l->nama }}
-                                                </button>
-                                            </h5>
-                                        </div>
-
-                                        <div id="collapse{{ $l->id }}" class="collapse" aria-labelledby="heading{{ $l->id }}"
-                                            data-parent="#accordionExample">
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    @foreach ($l->subLayanans as $sub)
-                                                        <div class="col-md-6">
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="checkbox" name="sub_layanan_ids[]"
-                                                                    value="{{ $sub->id }}" id="sub_{{ $sub->id }}"
-                                                                    {{ in_array($sub->id, $selectedSubLayanan) ? 'checked' : '' }}>
-                                                                <label class="form-check-label" for="sub_{{ $sub->id }}">
-                                                                    {{ $sub->nama }} - Rp{{ number_format($sub->harga) }}
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Obat --}}
-                    <div class="row">
-                        <div class="col-md-12 form-group">
+                        {{-- Obat --}}
+                        <div class="col-md-6 form-group">
                             <label>Obat</label>
                             <input type="text" class="form-control" name="obat" value="{{ $rekamMedis->obat }}" required>
                         </div>
                     </div>
 
-                    {{-- Terapis --}}
                     <div class="row">
-                        <div class="col-md-12 form-group">
+                        {{-- Terapis --}}
+                        <div class="col-md-6 form-group">
                             <label>Terapis</label>
                             <select name="terapis_id" class="form-control select2" required>
                                 <option value="">-- Pilih Terapis --</option>
@@ -123,10 +80,51 @@
                         </div>
                     </div>
 
-                    {{-- Submit --}}
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-pink">Perbarui</button>
+                    {{-- Sub Layanan --}}
+                    <div class="form-group mt-3">
+                        <label>Sub Layanan (Tindakan)</label>
+                        <div class="accordion" id="accordionExample">
+                            @foreach ($layanan as $l)
+                                <div class="card">
+                                    <div class="card-header" id="heading{{ $l->id }}">
+                                        <h5 class="mb-0">
+                                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                                                data-target="#collapse{{ $l->id }}" aria-expanded="false"
+                                                aria-controls="collapse{{ $l->id }}">
+                                                {{ $l->nama }}
+                                            </button>
+                                        </h5>
+                                    </div>
+
+                                    <div id="collapse{{ $l->id }}" class="collapse" aria-labelledby="heading{{ $l->id }}"
+                                        data-parent="#accordionExample">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                @if (!empty($l->subLayanans))
+                                                    @foreach ($l->subLayanans as $sub)
+                                                        <div class="col-md-6">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" name="sub_layanan_ids[]"
+                                                                    value="{{ $sub->id }}" id="sub_{{ $sub->id }}"
+                                                                    {{ in_array($sub->id, $selectedSubLayanan) ? 'checked' : '' }}>
+                                                                <label class="form-check-label" for="sub_{{ $sub->id }}">
+                                                                    {{ $sub->nama }} - Rp{{ number_format($sub->harga) }}
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
+
+                </div>
+                <div class="card-footer text-right">
+                    <button type="submit" class="btn btn-pink">Perbarui</button>
                 </div>
             </form>
         </div>
@@ -151,7 +149,7 @@
     <script>
         $(function () {
             $('.select2').select2({
-                placeholder: "Pilih Sub-Layanan",
+                placeholder: "Pilih",
                 allowClear: true
             });
         });

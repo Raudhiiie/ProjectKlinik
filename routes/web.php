@@ -77,8 +77,27 @@ Route::prefix('terapis')->name('terapis.')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'indexterapis'])->name('dashboard.index');
     Route::post('antrian', [AntrianController::class, 'store'])->name('antrian.store');
     Route::post('/antrian/{id}/panggil', [AntrianController::class, 'panggilPasien'])->name('antrian.panggil');
+    Route::put('/antrian/{id}/selesai', [AntrianController::class, 'selesai'])->name('antrian.selesai');
+    //Route::put('/antrian/{id}/ubah-status', [AntrianController::class, 'ubahStatus'])->name('antrian.ubahStatus');
+    //Route::post('/monitor/ubah-status/{id}', [AntrianController::class, 'ubahStatus']);
+    
 
 
+
+
+
+    // Route transfer di luar grup posisi
+    Route::post('produk/transfer', [ProdukController::class, 'transfer'])->name('produk.transfer');
+
+    // Group produk by posisi
+    Route::prefix('produk')->name('produk.')->group(function () {
+        Route::get('{posisi}', [ProdukController::class, 'index'])->name('index');
+        Route::get('{posisi}/create', [ProdukController::class, 'create'])->name('create');
+        Route::post('{posisi}', [ProdukController::class, 'store'])->name('store');
+        Route::get('{posisi}/{id}/edit', [ProdukController::class, 'edit'])->name('edit');
+        Route::put('{posisi}/{id}', [ProdukController::class, 'update'])->name('update');
+        Route::delete('{posisi}/{id}', [ProdukController::class, 'destroy'])->name('destroy');
+    });
 
     Route::prefix('produk')->name('produk.')->group(function () {
         Route::get('{posisi}', [ProdukController::class, 'index'])->name('index');

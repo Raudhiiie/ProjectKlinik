@@ -15,7 +15,7 @@
                     <img src="https://cdn-icons-png.flaticon.com/512/9570/9570587.png" alt="Dokter">
                     <div>
                         <strong class="d-block">Dokter</strong>
-                         1 orang
+                        1 orang
                     </div>
                 </div>
             </div>
@@ -67,14 +67,21 @@
                                     </span>
                                 </td>
                                 <td>
-                                    @if($data->status_panggil === 'Belum Dipanggil')
+                                    @if($data->status_panggil === 'Belum Dipanggil' && $data->status === 'menunggu')
                                         <form method="POST" action="{{ route('terapis.antrian.panggil', $data->id) }}">
                                             @csrf
-                                            <button type="submit" class="btn btn-sm btn-primary">Panggil</button>
+                                            <button type="submit" class="btn btn-sm btn-primary mb-1">Panggil</button>
+                                        </form>
+                                    @elseif($data->status_panggil === 'Dipanggil' && $data->status === 'proses')
+                                        <form method="POST" action="{{ route('terapis.antrian.selesai', $data->id) }}">
+                                            @csrf
+                                            @method('PUT')
+                                            <button type="submit" class="btn btn-sm btn-success">Selesai</button>
                                         </form>
                                     @else
-                                        <span class="text-muted">Sudah Dipanggil</span>
+                                        <span class="text-muted">Sudah Selesai</span>
                                     @endif
+
                                 </td>
                             </tr>
                         @empty
@@ -116,20 +123,23 @@
 @endsection
 
 @section('js')
+    <!-- Load Chart.js dulu -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
+        // Grafik Bulanan
         const ctxBulanan = document.getElementById('grafikBulanan').getContext('2d');
+
         new Chart(ctxBulanan, {
-            type: 'line',
+            type: 'bar',
             data: {
                 labels: {!! json_encode($labels_bulan) !!},
                 datasets: [{
                     label: 'Jumlah Pasien',
                     data: {!! json_encode($data_bulanan) !!},
-                    fill: false,
-                    borderColor: '#4bc0c0',
-                    backgroundColor: '#4bc0c0',
-                    tension: 0.2
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
                 }]
             },
             options: {
@@ -137,7 +147,70 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        precision: 0
+                        precision: 0,
+                        title: {
+                            display: true,
+                            text: 'Jumlah Pasien'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Bulan'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true
+                    },
+                    tooltip: {
+                        enabled: true
+                    }
+                }
+            }
+        });
+
+        // Grafik Harian
+        const ctxHarian = document.getElementById('grafikHarian').getContext('2d');
+
+        new Chart(ctxHarian, {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($labels_hari) !!},
+                datasets: [{
+                    label: 'Jumlah Pasien per Hari',
+                    data: {!! json_encode($data_harian) !!},
+                    fill: false,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        precision: 0,
+                        title: {
+                            display: true,
+                            text: 'Jumlah Pasien'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Hari'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true
+                    },
+                    tooltip: {
+                        enabled: true
                     }
                 }
             }

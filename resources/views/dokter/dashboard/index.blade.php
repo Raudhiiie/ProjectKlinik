@@ -7,25 +7,30 @@
 
 @section('content')
     <div class="container-fluid dashboard-container">
-        <h3 class="mb-4">Dashboard Terapis</h3>
+        <h3 class="mb-4">Dashboard Dokter</h3>
 
         <!-- Grafik -->
         <div class="row justify-content-center mb-5">
+            <!-- Grafik Harian -->
             <div class="col-md-6 mb-4">
                 <div class="card p-3 shadow-sm">
-                    <canvas id="chartHariIni"></canvas>
+                    <h5 class="text-center mb-3">Grafik Pasien 7 Hari Terakhir</h5>
+                    <canvas id="chartHarian" height="200"></canvas>
                 </div>
             </div>
+
+            <!-- Grafik Bulanan -->
             <div class="col-md-6 mb-4">
                 <div class="card p-3 shadow-sm">
-                    <canvas id="chartBulanIni"></canvas>
+                    <h5 class="text-center mb-3">Grafik Pasien Tahun Ini</h5>
+                    <canvas id="chartBulanan" height="200"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Box Ringkasan -->
+        <!-- Ringkasan -->
         <div class="row justify-content-center">
-            <!-- Dua box di atas -->
+            <!-- Pasien Hari Ini -->
             <div class="col-md-5 d-flex justify-content-center mb-4">
                 <div class="info-box">
                     <i class="fas fa-user dashboard-icon"></i>
@@ -33,6 +38,8 @@
                     <div class="info-value">{{ $pasien_hari_ini }} orang</div>
                 </div>
             </div>
+
+            <!-- Pasien Bulan Ini -->
             <div class="col-md-5 d-flex justify-content-center mb-4">
                 <div class="info-box">
                     <i class="fas fa-users dashboard-icon"></i>
@@ -41,7 +48,7 @@
                 </div>
             </div>
 
-            <!-- Satu box bawah -->
+            <!-- Rekam Medis -->
             <div class="col-md-12 d-flex justify-content-center">
                 <div class="info-box">
                     <i class="fas fa-notes-medical dashboard-icon"></i>
@@ -55,75 +62,74 @@
 
 @section('js')
     <script>
-        const chartHariIni = new Chart(document.getElementById('chartHariIni'), {
-            type: 'bar',
+        // Grafik Harian (Line Chart)
+        new Chart(document.getElementById('chartHarian'), {
+            type: 'line',
             data: {
-                labels: ['Hari Ini'],
+                labels: {!! json_encode($labels_hari_final) !!},
                 datasets: [{
-                    label: 'Jumlah Pasien',
-                    data: [{{ $pasien_hari_ini }}],
-                    backgroundColor: '#4e73df',
-                    borderRadius: 5
+                    label: 'Pasien Hari Ini',
+                    data: {!! json_encode($data_harian_final) !!},
+                    fill: false,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
                 }]
             },
             options: {
                 responsive: true,
                 plugins: {
-                    legend: { display: false },
-                    title: {
-                        display: true,
-                        text: 'Grafik Pasien Hari Ini'
-                    }
+                    legend: { display: true },
+                    tooltip: { mode: 'index', intersect: false }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            stepSize: 1,
                             precision: 0,
-                            callback: function (value) {
-                                return Number.isInteger(value) ? value : '';
-                            }
+                            stepSize: 1
                         }
                     }
                 }
             }
         });
 
-
-        const chartBulanIni = new Chart(document.getElementById('chartBulanIni'), {
+        // Grafik Bulanan (Bar Chart)
+        new Chart(document.getElementById('chartBulanan'), {
             type: 'bar',
             data: {
-                labels: ['Bulan Ini'],
+                labels: {!! json_encode($labels_bulan) !!},
                 datasets: [{
-                    label: 'Jumlah Pasien',
-                    data: [{{ $pasien_bulan_ini }}],
-                    backgroundColor: '#1cc88a',
+                    label: 'Pasien per Bulan',
+                    data: {!! json_encode($data_bulanan) !!},
+                    backgroundColor: 'rgba(28, 200, 138, 0.7)',
+                    borderColor: 'rgba(28, 200, 138, 1)',
+                    borderWidth: 1,
                     borderRadius: 5
                 }]
             },
             options: {
                 responsive: true,
                 plugins: {
-                    legend: { display: false },
-                    title: {
-                        display: true,
-                        text: 'Grafik Pasien Bulan Ini'
-                    }
+                    legend: { display: true },
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            stepSize: 1,
-                            callback: function (value) {
-                                return Number(value).toFixed(0);
-                            }
+                            precision: 0,
+                            stepSize: 1
                         }
                     }
                 }
             }
         });
-
     </script>
 @endsection

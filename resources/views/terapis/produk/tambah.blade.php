@@ -1,4 +1,5 @@
 @extends('template/master')
+
 @section('content')
 <br>
 <div class="col">
@@ -12,7 +13,8 @@
                 <div class="row">
                     <div class="col-md-6 form-group">
                         <label>Nama Produk</label>
-                        <input type="text" class="form-control" id="nama_produk" name="nama_produk" placeholder="Masukkan Nama Produk" required>
+                        <input type="text" class="form-control" id="nama_produk" name="nama_produk"
+                            placeholder="Masukkan Nama Produk" required>
                     </div>
                     <div class="col-md-6 form-group">
                         <label>Tanggal</label>
@@ -22,11 +24,13 @@
                 <div class="row">
                     <div class="col-md-6 form-group">
                         <label>In</label>
-                        <input type="number" class="form-control" id="in" name="in" placeholder="Masukkan In" oninput="calculateSisa()" required>
+                        <input type="number" class="form-control" id="in" name="in" placeholder="Masukkan In"
+                            oninput="calculateSisa()" required>
                     </div>
                     <div class="col-md-6 form-group">
                         <label>Out</label>
-                        <input type="number" class="form-control" id="out" name="out" placeholder="Masukkan Out" oninput="calculateSisa()" required>
+                        <input type="number" class="form-control" id="out" name="out" placeholder="Masukkan Out"
+                            oninput="calculateSisa()" required>
                     </div>
                 </div>
                 <div class="row">
@@ -53,7 +57,13 @@
                     </div>
                     <div class="col-md-6 form-group">
                         <label>Harga Produk</label>
-                        <input type="number" class="form-control" id="harga" name="harga" placeholder="Masukkan Harga Produk" required>
+                        @if ($posisi == 'gudang')
+                            <input type="number" class="form-control" id="harga" name="harga"
+                                placeholder="Masukkan Harga Produk" required>
+                        @else
+                            <input type="hidden" name="harga" value="0">
+                            <input type="text" class="form-control" value="Harga otomatis dari gudang" readonly>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -79,9 +89,9 @@
 @endsection
 
 @section('css')
-<link rel="stylesheet" href="{{ url('plugins/summernote/summernote-bs4.min.css') }}">
+    <link rel="stylesheet" href="{{ url('plugins/summernote/summernote-bs4.min.css') }}">
 @endsection
 
 @section('js')
-<script src="{{ url('plugins/summernote/summernote-bs4.min.js') }}"></script>
+    <script src="{{ url('plugins/summernote/summernote-bs4.min.js') }}"></script>
 @endsection

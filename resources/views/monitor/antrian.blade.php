@@ -29,19 +29,42 @@
                     <h2>ANTRIAN PASIEN</h2>
                     <div class="label-antrian">Nomor Antrian</div>
                     <div class="antrian-number">
-                        {{ $antrianDipanggil ? str_pad($antrianDipanggil->no_antrian, 3, '0', STR_PAD_LEFT) : '---' }}
+                        @if ($antrianDipanggil)
+                            {{ str_pad($antrianDipanggil->no_antrian, 3, '0', STR_PAD_LEFT) }}
+                        @elseif($antrianTerakhirSelesai)
+                            {{ str_pad($antrianTerakhirSelesai->no_antrian, 3, '0', STR_PAD_LEFT) }}
+                        @else
+                            ---
+                        @endif
                     </div>
+
+                    @if ($antrianDipanggil)
+                        @if ($antrianDipanggil->status === 'proses')
+                            <div class="text-2xl text-warning font-bold mt-2">Status: Konsultasi</div>
+                        @elseif ($antrianDipanggil->status === 'selesai')
+                            <div class="text-2xl text-success font-bold mt-2">Status: Selesai</div>
+                        @else
+                            <div class="text-2xl text-secondary font-bold mt-2">Status: Menunggu</div>
+                        @endif
+                    @elseif($antrianTerakhirSelesai)
+                        <div class="text-2xl text-success font-bold mt-2">Status: Selesai</div>
+                    @else
+                        <div class="text-2xl text-secondary font-bold mt-2">Status: Tidak Ada Antrian</div>
+                    @endif
+
                 </div>
+
 
                 <div class="waiting-list">
                     @forelse ($antrianSelanjutnya as $item)
                         <div class="waiting-item">
                             {{ str_pad($item->no_antrian, 3, '0', STR_PAD_LEFT) }}
-                            <small>Menunggu</small>
+                            <small>Status: {{ ucfirst($item->status) }}</small>
                         </div>
                     @empty
                         <div class="waiting-item">Tidak ada antrian</div>
                     @endforelse
+
                 </div>
 
             </div>

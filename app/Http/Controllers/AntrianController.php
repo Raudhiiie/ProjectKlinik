@@ -73,12 +73,11 @@ class AntrianController extends Controller
     public function panggilPasien($id)
     {
         $antrian = Antrian::findOrFail($id);
-
         $antrian->status_panggil = 'Dipanggil';
         $antrian->status = 'proses'; // jika kamu ingin langsung ubah ke 'proses'
         $antrian->save();
 
-        return redirect()->back()->with('success', 'Pasien berhasil dipanggil.');
+        return redirect()->route('terapis.dashboard.index')->with('success', 'Pasien telah dipanggil.');
     }
 
 
@@ -159,6 +158,22 @@ class AntrianController extends Controller
             ->take(5)
             ->get();
 
-        return view('monitor.antrian', compact('antrianDipanggil', 'antrianSelanjutnya'));
+        $antrianTerakhirSelesai = Antrian::where('status', 'selesai')
+            ->orderBy('updated_at', 'desc')
+            ->first();
+
+        return view('monitor.antrian', compact('antrianDipanggil', 'antrianSelanjutnya', 'antrianTerakhirSelesai'));
+    }
+
+    public function selesai($id)
+    {
+        $antrian = Antrian::findOrFail($id);
+        // Mengubah status jadi selesai
+        $antrian->status = 'selesai';
+        $antrian->status_panggil = 'Selesai';
+        $antrian->save();
+
+        return redirect()->route('terapis.dashboard.index')->with('success', 'Antrian telah diselesaikan.');
+        
     }
 }
