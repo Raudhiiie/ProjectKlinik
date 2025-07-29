@@ -117,6 +117,28 @@ class TransaksiController extends Controller
                     $produk->sisa -= $item['jumlah'];
                     $produk->out += $item['jumlah'];
                     $produk->save();
+                    // Ambil stok terakhir untuk posisi cream dan nama produk yang sama
+                    $stokTerakhir = Produk::where('posisi', 'cream')
+                        ->whereRaw('LOWER(nama_produk) = ?', [strtolower($produk->nama_produk)])
+                        ->orderByDesc('tanggal')
+                        ->first();
+
+                    $sisaSebelumnya = $stokTerakhir ? $stokTerakhir->sisa : 0;
+                    $sisaBaru = $sisaSebelumnya - $item['jumlah'];
+                    $sisaBaru = max($sisaBaru, 0); // biar gak minus
+
+                    // Catat pengeluaran di tabel produk (riwayat)
+                    Produk::create([
+                        'nama_produk' => $produk->nama_produk,
+                        'tanggal' => now(),
+                        'in' => 0,
+                        'out' => $item['jumlah'],
+                        'sisa' => $sisaBaru,
+                        'posisi' => 'cream',
+                        'terapis_id' => $transaksi->terapis_id ?? null,
+                        'harga' => $produk->harga
+                    ]);
+
 
                     $harga = Produk::find($item['id'])->harga;
                     $transaksi->details()->create([
@@ -305,8 +327,7 @@ class TransaksiController extends Controller
         ]);
 
         $transaksi = Transaksi::findOrFail($id);
-        $produk = Produk::where('posisi', 'cream')
-            ->findOrFail($request->produk_id);
+        $produk = Produk::where('posisi', 'cream')->findOrFail($request->produk_id);
 
         if ($produk->sisa < $request->jumlah) {
             return redirect()->back()->with('error', 'Stok produk tidak mencukupi. Sisa: ' . $produk->sisa);
@@ -317,6 +338,29 @@ class TransaksiController extends Controller
         $produk->out += $request->jumlah;
         $produk->save();
 
+        // Ambil stok terakhir untuk posisi cream dan nama produk yang sama
+        $stokTerakhir = Produk::where('posisi', 'cream')
+            ->whereRaw('LOWER(nama_produk) = ?', [strtolower($produk->nama_produk)])
+            ->orderByDesc('tanggal')
+            ->first();
+
+        $sisaSebelumnya = $stokTerakhir ? $stokTerakhir->sisa : 0;
+        $sisaBaru = $sisaSebelumnya - $request->jumlah;
+        $sisaBaru = max($sisaBaru, 0);
+
+        // Catat pengeluaran di tabel produk
+        Produk::create([
+            'nama_produk' => $produk->nama_produk,
+            'tanggal' => now(),
+            'in' => 0,
+            'out' => $request->jumlah,
+            'sisa' => $sisaBaru,
+            'posisi' => 'cream',
+            'terapis_id' => $transaksi->terapis_id ?? null,
+            'harga' => $produk->harga
+        ]);
+
+        // Buat detail transaksi
         $subtotal = $produk->harga * $request->jumlah;
 
         $transaksi->details()->create([
@@ -327,9 +371,8 @@ class TransaksiController extends Controller
             'subtotal' => $subtotal
         ]);
 
-
-        // Update total transaksi
-        $transaksi->calculateTotal(); // method dari model Transaksi
+        // Update total
+        $transaksi->calculateTotal();
 
         return redirect()->route('terapis.transaksi.index')->with('success', 'Produk berhasil ditambahkan ke transaksi.');
     }
