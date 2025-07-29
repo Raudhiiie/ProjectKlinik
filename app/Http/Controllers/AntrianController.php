@@ -38,20 +38,20 @@ class AntrianController extends Controller
 
     public function store(Request $request)
     {
-        // $request->validate([
-        //     'no_rm' => 'required|exists:pasiens,no_rm',
-        // ]);
+        $request->validate([
+            'no_rm' => 'required|exists:pasiens,no_rm',
+        ]);
 
         $tanggalHariIni = Carbon::today()->toDateString();
 
-        // Cek apakah pasien sudah antri hari ini
-        $cek = Antrian::where('no_rm', $request->no_rm)
-            ->where('tanggal', $tanggalHariIni)
-            ->first();
+        // // Cek apakah pasien sudah antri hari ini
+        // $cek = Antrian::where('no_rm', $request->no_rm)
+        //     ->where('tanggal', $tanggalHariIni)
+        //     ->first();
 
-        if ($cek) {
-            return redirect()->back()->with('success', 'Pasien sudah masuk antrian hari ini.');
-        }
+        // if ($cek) {
+        //     return redirect()->back()->with('success', 'Pasien sudah masuk antrian hari ini.');
+        // }
 
         // Hitung no antrian hari ini
         $jumlahAntrian = Antrian::where('tanggal', $tanggalHariIni)->count();
