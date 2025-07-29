@@ -41,7 +41,7 @@
                             <th style="text-align: center;">Keluhan</th>
                             <th style="text-align: center;">Tindakan</th>
                             <th style="text-align: center;">Obat</th>
-                            <th style="text-align: center;">Terapis</th>
+                            {{-- <th style="text-align: center;">Terapis</th> --}}
                             <th style="text-align: center;">Aksi</th>
                         </tr>
                     </thead>
@@ -60,7 +60,7 @@
 
 
                                 <td>{{ $data->obat }}</td>
-                                <td>{{ $data->terapis->nama }}</td>
+                                {{-- <td>{{ $data->terapis->nama }}</td> --}}
                                 <td class="text-center">
                                      <!-- -- Detail -- -->
                                             <a href="{{ route('dokter.rekamMedis.show', $data->pasien->no_rm) }}"
