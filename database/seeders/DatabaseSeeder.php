@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
         User::firstOrCreate(
-            ['email' => 'terapis1@example.com'], // cari berdasarkan email
+            ['email' => 'pretty@gmail.com'], // cari berdasarkan email
             [
                 'nama' => 'dr. Pretty Diandani',
                 'username' => 'dokter',
