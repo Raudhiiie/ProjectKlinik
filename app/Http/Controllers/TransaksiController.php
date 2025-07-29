@@ -42,10 +42,11 @@ class TransaksiController extends Controller
             return $item->layanan->nama;
         });
         $produk = Produk::where('posisi', 'cream')
-            ->select('id', 'nama_produk', 'harga') // kolom penting saja
-            ->distinct('nama_produk')
+            ->select(DB::raw('MIN(id) as id'), 'nama_produk', DB::raw('MAX(harga) as harga'))
+            ->groupBy('nama_produk')
             ->orderBy('nama_produk')
             ->get();
+
 
         $terapis = Terapis::all();
 
@@ -274,7 +275,12 @@ class TransaksiController extends Controller
     public function tambahProduk($id)
     {
         $transaksi = Transaksi::with('details')->findOrFail($id);
-        $produk = Produk::where('posisi', 'cream')->get();
+        $produk = Produk::where('posisi', 'cream')
+            ->select(DB::raw('MIN(id) as id'), 'nama_produk', DB::raw('MAX(harga) as harga'))
+            ->groupBy('nama_produk')
+            ->orderBy('nama_produk')
+            ->get();
+
 
 
         return view('terapis.transaksi.tambah_produk', compact('transaksi', 'produk'));
