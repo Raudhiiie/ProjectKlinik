@@ -14,29 +14,34 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-            'nama' => 'Terapis',
-            'username' => 'terapis',
-            'email' => 'terapis1@example.com',
-            'no_hp' => '081234567890',
-            'alamat' => 'Jl. Mawar No.1',
-            'tanggal_lahir' => '1995-05-01',
-            'tanggal_bergabung' => now()->toDateString(),
-            'password' => Hash::make('terapis'),
-            'role' => 'terapis',
-        ]);
-
-        User::create([
-            'nama' => 'dr. Pretty Diandani',
-            'username' => 'dokter',
-            'email' => 'pretty@gmail.com',
-            'no_hp' => '082284591222',
-            'alamat' => 'Jl. Melati No.2',
-            'tanggal_lahir' => '1990-02-15',
-            'tanggal_bergabung' => now()->toDateString(),
-            'password' => Hash::make('dokter'),
-            'role' => 'dokter',
-        ]);
+        User::firstOrCreate(
+            ['email' => 'terapis1@example.com'], // cari berdasarkan email
+            [
+                'nama' => 'Terapis',
+                'username' => 'terapis',
+                'email' => 'terapis1@example.com',
+                'no_hp' => '081234567890',
+                'alamat' => 'Jl. Mawar No.1',
+                'tanggal_lahir' => '1995-05-01',
+                'tanggal_bergabung' => now()->toDateString(),
+                'password' => Hash::make('terapis'),
+                'role' => 'terapis',
+            ]
+        );
+        User::firstOrCreate(
+            ['email' => 'terapis1@example.com'], // cari berdasarkan email
+            [
+                'nama' => 'dr. Pretty Diandani',
+                'username' => 'dokter',
+                'email' => 'pretty@gmail.com',
+                'no_hp' => '082284591222',
+                'alamat' => 'Jl. Melati No.2',
+                'tanggal_lahir' => '1990-02-15',
+                'tanggal_bergabung' => now()->toDateString(),
+                'password' => Hash::make('dokter'),
+                'role' => 'dokter',
+            ]
+        );
 
         User::create([
             'nama' => 'Nirmala',
@@ -72,7 +77,7 @@ class DatabaseSeeder extends Seeder
             'tanggal_bergabung' => '2025-03-21',
             'password' => Hash::make('srikesuma'),
             'role' => 'terapis',
-        ]); 
+        ]);
 
         User::create([
             'nama' => 'Laura Okta Vanjola',
@@ -84,6 +89,6 @@ class DatabaseSeeder extends Seeder
             'tanggal_bergabung' => '2025-03-28',
             'password' => Hash::make('laura'),
             'role' => 'terapis',
-        ]); 
+        ]);
     }
 }
