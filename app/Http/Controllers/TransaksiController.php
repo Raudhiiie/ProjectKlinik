@@ -107,6 +107,17 @@ class TransaksiController extends Controller
                     ]);
                 } else {
                     $produk = Produk::where('posisi', 'cream')->find($item['id']);
+
+                    if (!$produk || $produk->sisa < $item['jumlah']) {
+                        DB::rollback();
+                        return redirect()->back()->with('error', 'Stok produk "' . $produk->nama_produk . '" tidak mencukupi. Sisa: ' . $produk->sisa);
+                    }
+
+                    // Kurangi stok
+                    $produk->sisa -= $item['jumlah'];
+                    $produk->out += $item['jumlah'];
+                    $produk->save();
+
                     $harga = Produk::find($item['id'])->harga;
                     $transaksi->details()->create([
                         'jenis' => 'produk',
@@ -297,9 +308,17 @@ class TransaksiController extends Controller
         $produk = Produk::where('posisi', 'cream')
             ->findOrFail($request->produk_id);
 
+        if ($produk->sisa < $request->jumlah) {
+            return redirect()->back()->with('error', 'Stok produk tidak mencukupi. Sisa: ' . $produk->sisa);
+        }
+
+        // Kurangi stok
+        $produk->sisa -= $request->jumlah;
+        $produk->out += $request->jumlah;
+        $produk->save();
+
         $subtotal = $produk->harga * $request->jumlah;
 
-        // Tambahkan detail produk
         $transaksi->details()->create([
             'jenis' => 'produk',
             'produk_id' => $produk->id,
@@ -307,6 +326,7 @@ class TransaksiController extends Controller
             'harga_satuan' => $produk->harga,
             'subtotal' => $subtotal
         ]);
+
 
         // Update total transaksi
         $transaksi->calculateTotal(); // method dari model Transaksi
