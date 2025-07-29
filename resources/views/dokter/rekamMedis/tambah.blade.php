@@ -47,7 +47,7 @@
                 <div class="row">
                     <div class="col-md-6 form-group">
                         <label>Keluhan</label>
-                        <input type="text" class="form-control" name="keluhan" placeholder="Masukkan Keluhan" required>
+                        <textarea name="keluhan" class="form-control" rows="4" placeholder="Masukkan keluhan"></textarea>
                     </div>
 
                     <div class="col-md-6 form-group">

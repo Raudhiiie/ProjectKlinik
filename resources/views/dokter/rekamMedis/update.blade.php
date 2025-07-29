@@ -54,8 +54,8 @@
                         {{-- Keluhan --}}
                         <div class="col-md-6 form-group">
                             <label>Keluhan</label>
-                            <input type="text" class="form-control" name="keluhan" value="{{ $rekamMedis->keluhan }}"
-                                required>
+                            <textarea class="form-control" name="keluhan" value="{{ $rekamMedis->keluhan }}"
+                                required> </textarea>
                         </div>
 
                         {{-- Obat --}}
