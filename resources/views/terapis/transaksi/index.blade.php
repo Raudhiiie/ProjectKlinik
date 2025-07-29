@@ -154,6 +154,12 @@
                         </button>
                     </div>
                     <div class="modal-body">
+                        @if (session('error'))
+                            <div class="alert alert-danger">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
                         <div class="form-group">
                             <label>Metode Pembayaran</label>
                             <select name="metode_pembayaran" class="form-control" required>
@@ -230,8 +236,26 @@
                 }
             });
         }
+        $('#formBayar').on('submit', function (e) {
+            const total = parseFloat($('#totalTagihan').data('total'));
+            const bayar = parseFloat($('#jumlahBayar').val()) || 0;
+
+            if (bayar < total) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Pembayaran Gagal',
+                    text: 'Jumlah bayar kurang dari total tagihan!'
+                });
+            }
+        });
+
 
         $(document).ready(function () {
+            @if (session('error'))
+                $('#modalBayar').modal('show');
+            @endif
+
             // Handle tombol bayar
             $(document).on('click', '.btn-bayar', function () {
                 const id = $(this).data('id');
