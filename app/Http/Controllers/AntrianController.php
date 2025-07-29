@@ -42,6 +42,8 @@ class AntrianController extends Controller
             'no_rm' => 'required|exists:pasiens,no_rm',
         ]);
 
+        // $tanggalDipilih = Carbon::parse($request->tanggal)->toDateString();
+
         $tanggalHariIni = Carbon::today()->toDateString();
 
         // // Cek apakah pasien sudah antri hari ini

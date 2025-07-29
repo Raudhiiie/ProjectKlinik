@@ -94,11 +94,11 @@
                                     <form action="{{ route('terapis.antrian.store') }}" method="POST" class="d-inline">
                                         @csrf
                                         <input type="hidden" name="no_rm" value="{{ $data->no_rm }}">
+                                        {{-- <input type="date" name="tanggal" required class="form-control form-control-sm d-inline" style="width: 150px;"> --}}
                                         <button type="submit" class="btn btn-sm btn-warning" title="Antrikan Pasien">
                                             <i class="">Antrikan</i>
                                         </button>
                                     </form>
-
                                 </td>
                             </tr>
                         @endforeach
