@@ -70,9 +70,14 @@ class ProdukController extends Controller
                 ->orderByDesc('tanggal')
                 ->first();
 
-            if (!$stokGudang || $stokGudang->sisa < $request->in) {
-                return redirect()->back()->with('error', 'Stok di Gudang tidak mencukupi untuk transfer ke ' . $request->posisi);
+            if (!$stokGudang) {
+                return redirect()->back()->with('error', 'Produk "' . $request->nama_produk . '" belum tersedia di Gudang. Silakan tambahkan stok ke Gudang terlebih dahulu.');
             }
+
+            if ($stokGudang->sisa < $request->in) {
+                return redirect()->back()->with('error', 'Stok produk "' . $request->nama_produk . '" di Gudang hanya tersedia ' . $stokGudang->sisa . ' unit, tidak cukup untuk transfer ke ' . $request->posisi . '.');
+            }
+
 
             // Kurangi stok di gudang
             Produk::create([

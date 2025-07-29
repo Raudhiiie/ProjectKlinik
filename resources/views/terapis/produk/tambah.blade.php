@@ -1,91 +1,96 @@
 @extends('template/master')
 
 @section('content')
-<br>
-<div class="col">
-    <div class="card card-pink">
-        <div class="card-header">
-            <h3 class="card-title">Tambah Data Produk</h3>
+    @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Gagal!</strong> {{ session('error') }}
         </div>
-        <form action="{{ route('terapis.produk.store', $posisi) }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 form-group">
-                        <label>Nama Produk</label>
-                        <input type="text" class="form-control" id="nama_produk" name="nama_produk"
-                            placeholder="Masukkan Nama Produk" required>
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Tanggal</label>
-                        <input type="date" class="form-control" id="tanggal" name="tanggal" required>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 form-group">
-                        <label>In</label>
-                        <input type="number" class="form-control" id="in" name="in" placeholder="Masukkan In"
-                            oninput="calculateSisa()" required>
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Out</label>
-                        <input type="number" class="form-control" id="out" name="out" placeholder="Masukkan Out"
-                            oninput="calculateSisa()" required>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 form-group">
-                        <label>Sisa</label>
-                        <input type="number" class="form-control" id="sisa" name="sisa" placeholder="Sisa" readonly>
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Posisi</label>
-                        <input type="text" class="form-control" name="posisi" value="{{ ucfirst($posisi) }}" readonly>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 form-group">
-                        <label for="terapis_id">Nama Terapis</label>
-                        <select name="terapis_id" class="form-control" required>
-                            <option value="">-- Pilih Terapis --</option>
-                            @foreach ($terapis as $t)
-                                <option value="{{ $t->id }}" {{ old('terapis_id') == $t->id ? 'selected' : '' }}>
-                                    {{ $t->nama }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Harga Produk</label>
-                        @if ($posisi == 'gudang')
-                            <input type="number" class="form-control" id="harga" name="harga"
-                                placeholder="Masukkan Harga Produk" required>
-                        @else
-                            <input type="hidden" name="harga" value="0">
-                            <input type="text" class="form-control" value="Harga otomatis dari gudang" readonly>
-                        @endif
-                    </div>
-                </div>
+    @endif
+    <br>
+    <div class="col">
+        <div class="card card-pink">
+            <div class="card-header">
+                <h3 class="card-title">Tambah Data Produk</h3>
             </div>
-            <div class="card-footer text-right">
-                <button type="submit" class="btn btn-pink">Tambah</button>
-            </div>
-        </form>
+            <form action="{{ route('terapis.produk.store', $posisi) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label>Nama Produk</label>
+                            <input type="text" class="form-control" id="nama_produk" name="nama_produk"
+                                placeholder="Masukkan Nama Produk" required>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Tanggal</label>
+                            <input type="date" class="form-control" id="tanggal" name="tanggal" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label>In</label>
+                            <input type="number" class="form-control" id="in" name="in" placeholder="Masukkan In"
+                                oninput="calculateSisa()" required>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Out</label>
+                            <input type="number" class="form-control" id="out" name="out" placeholder="Masukkan Out"
+                                oninput="calculateSisa()" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label>Sisa</label>
+                            <input type="number" class="form-control" id="sisa" name="sisa" placeholder="Sisa" readonly>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Posisi</label>
+                            <input type="text" class="form-control" name="posisi" value="{{ ucfirst($posisi) }}" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="terapis_id">Nama Terapis</label>
+                            <select name="terapis_id" class="form-control" required>
+                                <option value="">-- Pilih Terapis --</option>
+                                @foreach ($terapis as $t)
+                                    <option value="{{ $t->id }}" {{ old('terapis_id') == $t->id ? 'selected' : '' }}>
+                                        {{ $t->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Harga Produk</label>
+                            @if ($posisi == 'gudang')
+                                <input type="number" class="form-control" id="harga" name="harga"
+                                    placeholder="Masukkan Harga Produk" required>
+                            @else
+                                <input type="hidden" name="harga" value="0">
+                                <input type="text" class="form-control" value="Harga otomatis dari gudang" readonly>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-right">
+                    <button type="submit" class="btn btn-pink">Tambah</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<script>
-    function calculateSisa() {
-        var masuk = parseInt(document.getElementById('in').value) || 0;
-        var keluar = parseInt(document.getElementById('out').value) || 0;
-        var sisa = masuk - keluar;
-        document.getElementById('sisa').value = sisa < 0 ? 0 : sisa;
-    }
+    <script>
+        function calculateSisa() {
+            var masuk = parseInt(document.getElementById('in').value) || 0;
+            var keluar = parseInt(document.getElementById('out').value) || 0;
+            var sisa = masuk - keluar;
+            document.getElementById('sisa').value = sisa < 0 ? 0 : sisa;
+        }
 
-    $(function () {
-        $('#deskripsi_form').summernote();
-    });
-</script>
+        $(function () {
+            $('#deskripsi_form').summernote();
+        });
+    </script>
 @endsection
 
 @section('css')
