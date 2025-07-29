@@ -42,10 +42,10 @@ class TransaksiController extends Controller
             return $item->layanan->nama;
         });
         $produk = Produk::where('posisi', 'cream')
-    ->select('id', 'nama_produk', 'harga') // kolom penting saja
-    ->distinct('nama_produk')
-    ->orderBy('nama_produk')
-    ->get();
+            ->select('id', 'nama_produk', 'harga') // kolom penting saja
+            ->distinct('nama_produk')
+            ->orderBy('nama_produk')
+            ->get();
 
         $terapis = Terapis::all();
 
@@ -75,7 +75,7 @@ class TransaksiController extends Controller
                     if (!$subLayanan) return 0;
                     $harga = $subLayanan->harga;
                 } else {
-                    $produk = Produk::whereIn('posisi',  'cream')->find($item['id']);
+                    $produk = Produk::where('posisi',  'cream')->find($item['id']);
                     if (!$produk) return 0;
                     $harga = $produk->harga;
                 }
@@ -274,7 +274,7 @@ class TransaksiController extends Controller
     public function tambahProduk($id)
     {
         $transaksi = Transaksi::with('details')->findOrFail($id);
-        $produk = Produk::whereIn('posisi','cream')->get();
+        $produk = Produk::where('posisi', 'cream')->get();
 
 
         return view('terapis.transaksi.tambah_produk', compact('transaksi', 'produk'));
@@ -288,7 +288,7 @@ class TransaksiController extends Controller
         ]);
 
         $transaksi = Transaksi::findOrFail($id);
-        $produk = Produk::whereIn('posisi', 'cream')
+        $produk = Produk::where('posisi', 'cream')
             ->findOrFail($request->produk_id);
 
         $subtotal = $produk->harga * $request->jumlah;
