@@ -51,11 +51,10 @@
                                 <td>{{ $data->no_rm }}</td>
                                 <td>{{ $data->tanggal }}</td>
                                 <td>{{ $data->pasien->nama }}</td>
-                                {{-- <td>{{ \Carbon\Carbon::parse($data->pasien->tanggal_terakhir)->format('d-m-Y') }}</td> --}}
                                 <td>{{ $data->keluhan }}</td>
                                 <td>
                                     @foreach ($data->details as $detail)
-                                        {{ $detail->sublayanan->layanan->nama ?? '-' }} - {{ $detail->sublayanan->nama ?? '-' }}
+                                        {{ $detail->sublayanan->layanan->nama ?? '-' }} - {{ $detail->sublayanan->nama ?? '-' }}<br>
                                     @endforeach
                                 </td>
                                 <td>{{ $data->obat }}</td>
