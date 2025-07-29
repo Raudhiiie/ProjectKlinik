@@ -43,7 +43,9 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        User::create([
+        User::firstOrCreate(
+            ['email' => 'nirmala@gmail.com'], // cari berdasarkan email
+            [
             'nama' => 'Nirmala',
             'username' => 'nirmala',
             'email' => 'nirmala@gmail.com',
@@ -55,7 +57,9 @@ class DatabaseSeeder extends Seeder
             'role' => 'terapis',
         ]);
 
-        User::create([
+        User::firstOrCreate(
+            ['email' => 'kevina@gmail.com'], // cari berdasarkan email
+            [
             'nama' => 'Kevina',
             'username' => 'kevina',
             'email' => 'kevina@gmail.com',
@@ -67,7 +71,9 @@ class DatabaseSeeder extends Seeder
             'role' => 'terapis',
         ]);
 
-        User::create([
+        User::firstOrCreate(
+            ['email' => 'srikesuma@gmail.com'], // cari berdasarkan email
+            [
             'nama' => 'Sri Kesuma Astuti',
             'username' => 'srikesuma',
             'email' => 'srikesuma@gmail.com',
@@ -79,7 +85,9 @@ class DatabaseSeeder extends Seeder
             'role' => 'terapis',
         ]);
 
-        User::create([
+        User::firstOrCreate(
+            ['email' => 'laura@gmail.com'], // cari berdasarkan email
+            [
             'nama' => 'Laura Okta Vanjola',
             'username' => 'laura',
             'email' => 'laura@gmail.com',
