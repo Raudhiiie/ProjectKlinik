@@ -31,13 +31,31 @@ class DashboardController extends Controller
             ->get();
 
 
+        $bulan_labels = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember'
+        ];
+
+        $data_pasien = $pasien_bulanan->pluck('jumlah', 'bulan'); // [bulan => jumlah]
+
         $labels_bulan = [];
         $data_bulanan = [];
 
-        foreach ($pasien_bulanan as $item) {
-            $labels_bulan[] = Carbon::create()->month($item->bulan)->translatedFormat('F');
-            $data_bulanan[] = $item->jumlah;
+        foreach ($bulan_labels as $no => $nama) {
+            $labels_bulan[] = $nama;
+            $data_bulanan[] = $data_pasien[$no] ?? 0;
         }
+
 
         // Pasien harian dalam 7 hari terakhir
         $rangeTanggal = Carbon::now()->subDays(6)->startOfDay(); // 6 hari ke belakang + hari ini = 7 hari
@@ -108,13 +126,31 @@ class DashboardController extends Controller
             ->orderBy('bulan')
             ->get();
 
+        $bulan_labels = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember'
+        ];
+
+        $data_pasien = $pasien_bulanan->pluck('jumlah', 'bulan'); // [bulan => jumlah]
+
         $labels_bulan = [];
         $data_bulanan = [];
 
-        foreach ($pasien_bulanan as $item) {
-            $labels_bulan[] = Carbon::create()->month($item->bulan)->translatedFormat('F'); // Januari, Februari, dst
-            $data_bulanan[] = $item->jumlah;
+        foreach ($bulan_labels as $no => $nama) {
+            $labels_bulan[] = $nama;
+            $data_bulanan[] = $data_pasien[$no] ?? 0;
         }
+
 
 
         // Buat 7 hari terakhir (termasuk hari ini)
