@@ -17,21 +17,21 @@ class rekamMedisController extends Controller
 {
     public function index()
     {
-        // // Ambil semua data rekam medis dan eager load data pasien (relasi)
-        // $rekamMedis = RekamMedis::with(['pasien', 'terapis', 'details.sublayanan.layanan'])->get();
+        // Ambil semua data rekam medis dan eager load data pasien (relasi)
+        $rekamMedis = RekamMedis::with(['pasien', 'terapis', 'details.sublayanan.layanan'])->get();
 
-        // Ambil tanggal terbaru per no_rm
-        $subQuery = RekamMedis::select('no_rm', DB::raw('MAX(tanggal) as tanggal_terbaru'))
-            ->groupBy('no_rm');
+        // // Ambil tanggal terbaru per no_rm
+        // $subQuery = RekamMedis::select('no_rm', DB::raw('MAX(tanggal) as tanggal_terbaru'))
+        //     ->groupBy('no_rm');
 
-        // Join dengan tabel rekam_medis untuk ambil seluruh baris (termasuk id)
-        $rekamMedis = RekamMedis::with('pasien')
-            ->joinSub($subQuery, 'latest', function ($join) {
-                $join->on('rekam_medis.no_rm', '=', 'latest.no_rm')
-                    ->on('rekam_medis.tanggal', '=', 'latest.tanggal_terbaru');
-            })
-            ->orderByDesc('rekam_medis.tanggal')
-            ->get(['rekam_medis.*']); // penting! ambil semua kolom
+        // // Join dengan tabel rekam_medis untuk ambil seluruh baris (termasuk id)
+        // $rekamMedis = RekamMedis::with('pasien')
+        //     ->joinSub($subQuery, 'latest', function ($join) {
+        //         $join->on('rekam_medis.no_rm', '=', 'latest.no_rm')
+        //             ->on('rekam_medis.tanggal', '=', 'latest.tanggal_terbaru');
+        //     })
+        //     ->orderByDesc('rekam_medis.tanggal')
+        //     ->get(['rekam_medis.*']); // penting! ambil semua kolom
 
         return view('dokter.rekamMedis.index', compact('rekamMedis'));;
     }
