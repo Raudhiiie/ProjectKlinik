@@ -46,7 +46,7 @@
                 <tbody>
                     @forelse($transaksiPerTanggal as $row)
                     <tr>
-                        <td>{{ \Carbon\Carbon::parse($row->tanggal)->format('d-m-Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($row->tanggal)->translatedFormat('j M Y') }}<br></td>
                         <td>Rp {{ number_format($row->tf, 0, ',', '.') }}</td>
                         <td>Rp {{ number_format($row->qris, 0, ',', '.') }}</td>
                         <td>Rp {{ number_format($row->cash, 0, ',', '.') }}</td>

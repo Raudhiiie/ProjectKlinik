@@ -37,21 +37,22 @@
                             ---
                         @endif
                     </div>
-
+<div class="status-container">
                     @if ($antrianDipanggil)
                         @if ($antrianDipanggil->status === 'proses')
-                            <div class="text-2xl text-warning font-bold mt-2">Status: Konsultasi</div>
+                            <div class="status-antrian status-konsultasi" style="font-size: 2rem;">Status: Konsultasi</div>
                         @elseif ($antrianDipanggil->status === 'selesai')
-                            <div class="text-2xl text-success font-bold mt-2">Status: Selesai</div>
+                            <div class="status-antrian status-selesai" style="font-size: 2rem;">Status: Selesai</div>
                         @else
-                            <div class="text-2xl text-secondary font-bold mt-2">Status: Menunggu</div>
+                            <div class="status-antrian status-menunggu" style="font-size: 2rem;">Status: Menunggu</div>
                         @endif
                     @elseif($antrianTerakhirSelesai)
-                        <div class="text-2xl text-success font-bold mt-2">Status: Selesai</div>
+                        <div class="status-antrian status-selesai" style="font-size: 2rem;">Status: Selesai</div>
                     @else
-                        <div class="text-2xl text-secondary font-bold mt-2">Status: Tidak Ada Antrian</div>
+                        <div class="status-antrian status-tidak-ada" style="font-size: 2rem;">Status: Tidak Ada Antrian
+                        </div>
                     @endif
-
+                    </div>
                 </div>
 
 
@@ -87,6 +88,11 @@
 
             setInterval(updateClock, 1000);
             updateClock();
+
+            // ⏱️ Auto-refresh setiap 30 detik
+            setTimeout(() => {
+                location.reload();
+            }, 30000); // 30000ms = 30 detik
         </script>
     </body>
 

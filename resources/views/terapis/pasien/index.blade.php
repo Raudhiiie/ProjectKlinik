@@ -58,47 +58,49 @@
                                 <td>{{ $data->alamat }}</td>
                                 <td>{{ $data->pekerjaan }}</td>
                                 <td>{{ $data->jenis_kelamin }}</td>
-                                <td>{{ \Carbon\Carbon::parse($data->tanggal_lahir)->format('d-m-Y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($data->tanggal)->translatedFormat('j M Y') }}<br></td>
                                 <td>{{ $data->no_hp }}</td>
                                 <td class="text-center">
                                     {{ $data->antrians_count > 0 ? $data->antrians_count . ' kali' : 'Belum Pernah' }}
                                 </td>
-
                                 <td class="text-center">
-                                    <!-- -- Detail -- -->
-                                    <a href="{{ route('terapis.pasien.show', ['pasien' => $data->no_rm]) }}"
-                                        class="text-primary" title="Lihat Detail">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
+                                    <div class="d-flex justify-content-center align-items-center" style="gap: 5px;">
+                                        <!-- Detail -->
+                                        <a href="{{ route('terapis.pasien.show', ['pasien' => $data->no_rm]) }}"
+                                            class="btn btn-sm btn-outline-primary" title="Lihat Detail">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
 
-                                    <!-- -- Edit -- -->
-                                    <a href="{{ route('terapis.pasien.edit', ['pasien' => $data->no_rm]) }}"
-                                        class="text-success ml-2" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
+                                        <!-- Edit -->
+                                        <a href="{{ route('terapis.pasien.edit', ['pasien' => $data->no_rm]) }}"
+                                            class="btn btn-sm btn-outline-success" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
 
-                                    <!-- -- Delete -- -->
-                                    <a href="#" onclick="confirmDelete('{{ $data->no_rm }}')" class="text-danger ml-2"
-                                        title="Delete">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
-
-                                    <form id="deleteForm{{ $data->no_rm }}"
-                                        action="{{ route('terapis.pasien.destroy', ['pasien' => $data->no_rm]) }}"
-                                        method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" style="display: none;"></button>
-                                    </form>
-                                    <!-- -- Antrikan Pasien -- -->
-                                    <form action="{{ route('terapis.antrian.store') }}" method="POST" class="d-inline">
-                                        @csrf
-                                        <input type="hidden" name="no_rm" value="{{ $data->no_rm }}">
-                                        {{-- <input type="date" name="tanggal" required class="form-control form-control-sm d-inline" style="width: 150px;"> --}}
-                                        <button type="submit" class="btn btn-sm btn-warning" title="Antrikan Pasien">
-                                            <i class="">Antrikan</i>
+                                        <!-- Delete -->
+                                        <button onclick="confirmDelete('{{ $data->no_rm }}')"
+                                            class="btn btn-sm btn-outline-danger" title="Hapus">
+                                            <i class="fas fa-trash"></i>
                                         </button>
-                                    </form>
+                                        <form id="deleteForm{{ $data->no_rm }}"
+                                            action="{{ route('terapis.pasien.destroy', ['pasien' => $data->no_rm]) }}"
+                                            method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" style="display: none;"></button>
+                                        </form>
+                                    </div>
+
+                                    <!-- Antrikan -->
+                                    <div class="mt-2">
+                                        <form action="{{ route('terapis.antrian.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="no_rm" value="{{ $data->no_rm }}">
+                                            <button type="submit" class="btn btn-sm btn-warning" title="Antrikan Pasien">
+                                                Antrikan
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
@@ -133,7 +135,12 @@
         $(function () {
             var table = $("#example1").DataTable({
                 scrollX: true,
+                scrollY: "400px",      // tinggi scroll vertikal
+                scrollCollapse: true,  // tabel bisa mengecil jika datanya kurang
+                autoWidth: false,
+                responsive: true
             });
+
             table.buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
         });
 

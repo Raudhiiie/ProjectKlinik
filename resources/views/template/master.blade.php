@@ -42,23 +42,37 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link" data-toggle="dropdown" href="#" title="Notifikasi">
                             <i class="far fa-bell"></i>
-                            <span class="badge badge-warning navbar-badge">3</span>
+                            @php
+                                $countHabis = $produkHabisNotif->count();
+                                $countOther = 0;
+                                $totalNotif = $countHabis + $countOther;
+                            @endphp
+                            @if($totalNotif > 0)
+                                <span class="badge badge-warning navbar-badge">{{ $totalNotif }}</span>
+                            @endif
                         </a>
                         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                            <span class="dropdown-header">3 Notifikasi</span>
+                            <span class="dropdown-header">{{ $totalNotif }} Notifikasi</span>
                             <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-user-plus mr-2"></i> Pasien baru mendaftar
-                                <span class="float-right text-muted text-sm">2 mnt</span>
-                            </a>
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-calendar-alt mr-2"></i> Jadwal kontrol hari ini
-                                <span class="float-right text-muted text-sm">1 jam</span>
-                            </a>
+
+                            @foreach ($produkHabisNotif as $produk)
+                                <a href="{{ route('terapis.produk.index', $produk->posisi) }}" class="dropdown-item">
+                                    <i class="fas fa-box-open mr-2"></i>
+                                    <strong>{{ $produk->nama_produk }}</strong> di
+                                    <strong>{{ ucfirst($produk->posisi) }}</strong> habis.
+                                    @php
+                                        $tanggal = \Carbon\Carbon::parse($produk->last_date);
+                                    @endphp
+                                    <span class="float-right text-muted text-sm">{{ $tanggal->diffForHumans() }}</span>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                            @endforeach
+
                             <div class="dropdown-divider"></div>
                             <a href="#" class="dropdown-item dropdown-footer">Lihat Semua</a>
                         </div>
                     </li>
+
                     <!-- Akun -->
                     <!-- Akun -->
                     <li class="nav-item dropdown">
@@ -135,7 +149,7 @@
 
                         {{-- User Terapis --}}
                         @if (Auth::user()->role === 'terapis')
-                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                                 data-accordion="false">
                                 <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
                                 <li class="nav-item">
@@ -252,7 +266,7 @@
                         @endif
                         {{-- Jika Dokter --}}
                         @if (Auth::user()->role === 'dokter')
-                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                                 data-accordion="false">
                                 <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
                                 <li class="nav-item">
@@ -263,8 +277,8 @@
                                     </a>
                                 </li>
 
-                            </ul>    
-                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                            </ul>
+                            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                                 data-accordion="false">
                                 <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
                                 <li class="nav-item">
@@ -318,13 +332,14 @@
             <script src="{{url('plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
             <!-- AdminLTE -->
             <script src="{{url('dist/js/adminlte.js')}}"></script>
-
             <!-- OPTIONAL SCRIPTS -->
             <script src="{{url('plugins/chart.js/Chart.min.js')}}"></script>
             <!-- AdminLTE for demo purposes -->
             <script src="{{url('dist/js/demo.js')}}"></script>
             <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
             <script src="{{url('dist/js/pages/dashboard3.js')}}"></script>
+            <!-- Select2 -->
+            <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
             <script>
                 $(".custom-file-input").on("change", function () {
                     var fileName = $(this).val().split("\\").pop();

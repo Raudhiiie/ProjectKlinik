@@ -1,6 +1,6 @@
 .dashboard-container {
     background-color: #f5f5f5;
-    padding: 2rem;
+    padding: 1.5rem; /* Kurangi padding */
     border-radius: 12px;
 }
 
@@ -9,27 +9,45 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 150px;
-    width:  400px;
+    height: 120px; /* Menurunkan tinggi info-box */
+    width: 100%;
+    max-width: 350px; /* Membatasi lebar untuk lebih compact */
     background-color: #ffffff;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     text-align: center;
     transition: 0.3s ease;
+    margin-bottom: 1rem; /* Menurunkan margin bawah */
 }
 
 .dashboard-icon {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
+    font-size: 2rem; /* Menurunkan ukuran ikon */
+    margin-bottom: 5px;
     color: #000;
 }
 
 .info-title {
     font-weight: 600;
-    margin-bottom: 5px;
+    font-size: 1.1rem;
+    margin-bottom: 3px;
 }
 
 .info-value {
-    font-size: 1rem;
+    font-size: 0.9rem; /* Menurunkan ukuran font info-value */
     color: #333;
+}
+
+/* Grafik */
+canvas {
+    max-width: 100%; /* Grafik responsif */
+    height: 180px !important; /* Mengatur tinggi grafik lebih rendah */
+}
+
+/* Mengatur layout untuk grid */
+.row {
+    margin-bottom: 0.5rem; /* Mengurangi margin antar row */
+}
+
+.col-md-6, .col-md-5, .col-md-12 {
+    margin-bottom: 1rem;
 }

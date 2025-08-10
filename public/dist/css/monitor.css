@@ -1,121 +1,156 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: "Segoe UI", sans-serif;
+    background-color: #fff;
+    box-sizing: border-box;
+}
 
-            html,
-            body {
-                margin: 0;
-                padding: 0;
-                height: 100%;
-                font-family: 'Segoe UI', sans-serif;
-                background-color: #fff;
-                box-sizing: border-box;
-            }
+body {
+    display: flex;
+    flex-direction: column;
+}
 
-            body {
-                display: flex;
-                flex-direction: column;
-            }
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #fce4ec;
+    flex-shrink: 0;
+}
 
-            .header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 1rem 2rem;
-                background-color: #fce4ec;
-                flex-shrink: 0;
-            }
+.clinic-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #d81b60;
+}
 
-            .clinic-name {
-                font-size: 1.5rem;
-                font-weight: bold;
-                color: #d81b60;
-            }
+.clock {
+    text-align: right;
+}
 
-            .clock {
-                text-align: right;
-            }
+.clock .time {
+    font-size: 2rem;
+    font-weight: bold;
+}
 
-            .clock .time {
-                font-size: 2rem;
-                font-weight: bold;
-            }
+.main {
+    display: flex;
+    justify-content: space-between;
+    padding: 2rem;
+    flex-grow: 1;
+}
 
-            .main {
-                display: flex;
-                justify-content: space-between;
-                padding: 2rem;
-                flex-grow: 1;
-            }
+.left-box {
+    width: 45%;
+}
 
-            .left-box {
-                width: 45%;
-            }
+.right-box {
+    width: 50%;
+}
 
-            .right-box {
-                width: 50%;
-            }
+.antrian-box {
+    background-color: #f8bbd0;
+    border-radius: 10px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+}
 
-            .antrian-box {
-                background-color: #f8bbd0;
-                border-radius: 10px;
-                padding: 2rem 1.5rem;
-                text-align: center;
-            }
+.antrian-box .label-antrian {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
 
-            .antrian-box .label-antrian {
-                font-size: 1.3rem;
-                font-weight: 600;
-                color: #333;
-                margin-bottom: 0.5rem;
-            }
+.antrian-number {
+    font-size: 6rem;
+    font-weight: bold;
+    background: white;
+    display: inline-block;
+    padding: 1rem 3rem;
+    border-radius: 10px;
+    margin-top: 1rem;
+}
 
-            .antrian-number {
-                font-size: 6rem;
-                font-weight: bold;
-                background: white;
-                display: inline-block;
-                padding: 1rem 3rem;
-                border-radius: 10px;
-                margin-top: 1rem;
-            }
+.waiting-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
 
-            .waiting-list {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 1rem;
-                justify-content: center;
-                margin-top: 2rem;
-            }
+.waiting-item {
+    background-color: #fce4ec;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+}
 
-            .waiting-item {
-                background-color: #fce4ec;
-                padding: 1rem 2rem;
-                border-radius: 8px;
-                font-size: 2rem;
-                font-weight: bold;
-                text-align: center;
-            }
+.waiting-item small {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: normal;
+    margin-top: 4px;
+}
 
-            .waiting-item small {
-                display: block;
-                font-size: 0.8rem;
-                font-weight: normal;
-                margin-top: 4px;
-            }
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+}
 
-            iframe {
-                width: 100%;
-                height: 100%;
-                border: none;
-                border-radius: 8px;
-            }
+.footer {
+    background-color: #f8bbd0;
+    height: 10px;
+    flex-shrink: 0;
+}
 
-            .footer {
-                background-color: #f8bbd0;
-                height: 10px;
-                flex-shrink: 0;
-            }
+/* Ensure iframe doesn't overflow screen */
+.right-box,
+.left-box {
+    height: 100%;
+}
 
-            /* Ensure iframe doesn't overflow screen */
-            .right-box,
-            .left-box {
-                height: 100%;
-            }
+.status-antrian {
+    font-size: 2.2rem;
+    font-weight: 700;
+    padding: 0.6rem 2rem;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Warna berdasarkan status */
+.status-konsultasi {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-selesai {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-menunggu {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-tidak-ada {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.status-container {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+}

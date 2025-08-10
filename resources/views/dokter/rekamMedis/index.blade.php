@@ -49,7 +49,7 @@
                         @foreach($rekamMedis as $key => $data)
                             <tr>
                                 <td>{{ $data->no_rm }}</td>
-                                <td>{{ $data->tanggal }}</td>
+                                <td>{{ \Carbon\Carbon::parse($data->tanggal)->translatedFormat('j M Y') }}<br></td>
                                 <td>{{ $data->pasien->nama }}</td>
                                 <td>{{ $data->keluhan }}</td>
                                 <td>
@@ -60,31 +60,33 @@
                                 <td>{{ $data->obat }}</td>
                                 <td>{{ $data->terapis->nama }}</td>
                                 <td class="text-center">
-                                     <!-- -- Detail -- -->
-                                            <a href="{{ route('dokter.rekamMedis.show', $data->pasien->no_rm) }}"
-                                    class="text-primary" title="Lihat Detail">
-                                    <i class="fas fa-eye"></i>
-                                    </a> 
+                                    <div class="d-flex justify-content-center align-items-center" style="gap: 5px;">
+                                        <!-- -- Detail -- -->
+                                        <a href="{{ route('dokter.rekamMedis.show', $data->pasien->no_rm) }}"
+                                            class="btn btn-sm btn-outline-primary" title="Lihat Detail">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
 
-                                    <!-- -- Edit -- -->
-                                    <a href="{{ route('dokter.rekamMedis.edit', ['rekamMedis' => $data->id]) }}"
-                                        class="text-success ml-2" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
+                                        <!-- -- Edit -- -->
+                                        <a href="{{ route('dokter.rekamMedis.edit', ['rekamMedis' => $data->id]) }}"
+                                            class="btn btn-sm btn-outline-success" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
 
-                                    <!-- -- Delete -- -->
-                                    <a href="#" onclick="confirmDelete('{{ $data->id }}')" class="text-danger ml-2"
-                                        title="Delete">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
+                                        <!-- -- Delete -- -->
+                                        <a href="#" onclick="confirmDelete('{{ $data->id }}')"
+                                            class="btn btn-sm btn-outline-danger" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
 
-                                    <form id="deleteForm{{ $data->id }}"
-                                        action="{{ route('dokter.rekamMedis.destroy', ['rekamMedis' => $data->id]) }}"
-                                        method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" style="display: none;"></button>
-                                    </form>
+                                        <form id="deleteForm{{ $data->id }}"
+                                            action="{{ route('dokter.rekamMedis.destroy', ['rekamMedis' => $data->id]) }}"
+                                            method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" style="display: none;"></button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach

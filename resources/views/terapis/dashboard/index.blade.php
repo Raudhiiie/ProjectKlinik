@@ -10,7 +10,7 @@
 
         <!-- Info Box: Dokter & Terapis -->
         <div class="row mb-4">
-            <div class="col-md-6">
+            <div class="col-md-6 col-12">
                 <div class="info-box">
                     <img src="https://cdn-icons-png.flaticon.com/512/9570/9570587.png" alt="Dokter">
                     <div>
@@ -19,7 +19,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 col-12">
                 <div class="info-box">
                     <img src="https://cdn-icons-png.flaticon.com/512/10372/10372721.png" alt="Terapis">
                     <div>
@@ -99,26 +99,25 @@
         </div>
 
         <!-- Grafik Pasien -->
-        <div class="card mb-4">
-            <div class="card-header bg-primary text-white">
-                <ul class="nav nav-tabs card-header-tabs" id="grafikTab" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="bulanan-tab" data-toggle="tab" href="#bulanan" role="tab">Bulanan</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="harian-tab" data-toggle="tab" href="#harian" role="tab">Hari Ini</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="card-body tab-content">
-                <div class="tab-pane fade show active" id="bulanan" role="tabpanel">
-                    <canvas id="grafikBulanan" class="w-100" style="max-height: 250px;"></canvas>
+        <!-- Grafik Pasien -->
+        <div class="row justify-content-center mb-5">
+            <!-- Grafik Harian -->
+            <div class="col-md-6 mb-4">
+                <div class="card p-3 shadow-sm">
+                    <h5 class="text-center mb-3">Grafik Pasien 7 Hari Terakhir</h5>
+                    <canvas id="chartHarian" height="200"></canvas>
                 </div>
-                <div class="tab-pane fade" id="harian" role="tabpanel">
-                    <canvas id="grafikHarian" class="w-100" style="max-height: 250px;"></canvas>
+            </div>
+
+            <!-- Grafik Bulanan -->
+            <div class="col-md-6 mb-4">
+                <div class="card p-3 shadow-sm">
+                    <h5 class="text-center mb-3">Grafik Pasien Tahun Ini</h5>
+                    <canvas id="chartBulanan" height="200"></canvas>
                 </div>
             </div>
         </div>
+
     </div>
 @endsection
 
@@ -128,17 +127,41 @@
 
     <script>
         // Grafik Bulanan
-        const ctxBulanan = document.getElementById('grafikBulanan').getContext('2d');
-
-        new Chart(ctxBulanan, {
-            type: 'bar',
+        // Grafik Harian (7 Hari Terakhir)
+        var ctxHarian = document.getElementById('chartHarian').getContext('2d');
+        var chartHarian = new Chart(ctxHarian, {
+            type: 'line', // Tipe grafik, bisa diganti sesuai keinginan (line, bar, pie, dll)
             data: {
-                labels: {!! json_encode($labels_bulan) !!},
+                labels: {!! json_encode($labels_hari) !!},
                 datasets: [{
                     label: 'Jumlah Pasien',
-                    data: {!! json_encode($data_bulanan) !!},
-                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    data: {!! json_encode($data_harian) !!}, // Data jumlah pasien
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Grafik Bulanan (Tahun Ini)
+        var ctxBulanan = document.getElementById('chartBulanan').getContext('2d');
+        var chartBulanan = new Chart(ctxBulanan, {
+            type: 'bar', // Tipe grafik, bisa diganti sesuai keinginan
+            data: {
+                labels: {!! json_encode($labels_bulan) !!}, // Bulan dalam setahun
+                datasets: [{
+                    label: 'Jumlah Pasien',
+                    data: {!! json_encode($data_bulanan) !!}, // Data jumlah pasien per bulan
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
                     borderWidth: 1
                 }]
             },
@@ -146,71 +169,7 @@
                 responsive: true,
                 scales: {
                     y: {
-                        beginAtZero: true,
-                        precision: 0,
-                        title: {
-                            display: true,
-                            text: 'Jumlah Pasien'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Bulan'
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: true
-                    },
-                    tooltip: {
-                        enabled: true
-                    }
-                }
-            }
-        });
-
-        // Grafik Harian
-        const ctxHarian = document.getElementById('grafikHarian').getContext('2d');
-
-        new Chart(ctxHarian, {
-            type: 'line',
-            data: {
-                labels: {!! json_encode($labels_hari) !!},
-                datasets: [{
-                    label: 'Jumlah Pasien per Hari',
-                    data: {!! json_encode($data_harian) !!},
-                    fill: false,
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        precision: 0,
-                        title: {
-                            display: true,
-                            text: 'Jumlah Pasien'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Hari'
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: true
-                    },
-                    tooltip: {
-                        enabled: true
+                        beginAtZero: true
                     }
                 }
             }

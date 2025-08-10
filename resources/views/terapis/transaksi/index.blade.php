@@ -55,14 +55,14 @@
                 <table id="example1" class="table table-bordered" style="width:100%">
                     <thead>
                         <tr>
-                            <th>No</th>
-                            <th>Tanggal</th>
-                            <th>Pasien</th>
-                            <th>Item Transaksi</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th>Metode</th>
-                            <th>Aksi</th>
+                            <th style="text-align: center;">No</th>
+                            <th style="text-align: center;">Tanggal</th>
+                            <th style="text-align: center;">Pasien</th>
+                            <th style="text-align: center;">Item Transaksi</th>
+                            <th style="text-align: center;">Total</th>
+                            <th style="text-align: center;">Status</th>
+                            <th style="text-align: center;">Metode</th>
+                            <th style="text-align: center;">Aksi</th>
                         </tr>
                     </thead>
 
@@ -70,7 +70,7 @@
                         @foreach ($transaksi as $t)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ \Carbon\Carbon::parse($t->tanggal)->format('d-m-Y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($t->tanggal)->translatedFormat('j M Y') }}<br></td>
                                 <td>{{ $t->pasien->nama ?? '-' }}</td>
                                 <td>
                                     <ul class="mb-0 pl-3">
@@ -105,22 +105,23 @@
 
                                 <td>{{ ucfirst($t->metode_pembayaran) }}</td>
                                 <td>
+                                    <div class="d-flex justify-content-center flex-wrap gap-2">
                                     @if($t->keterangan == 'Belum Bayar')
-                                        <button class="btn btn-sm btn-primary btn-bayar" data-id="{{ $t->id }}"
+                                        <button class="btn btn-sm btn-primary btn-bayar mr-1 mb-1" data-id="{{ $t->id }}"
                                             data-total="{{ $t->total_harga }}">
                                             <i class="fas fa-money-bill-wave"></i> Bayar
                                         </button>
                                     @endif
-                                    <a href="{{ route('terapis.transaksi.cetak', $t->id) }}" class="btn btn-sm btn-success"
+                                    <a href="{{ route('terapis.transaksi.cetak', $t->id) }}" class="btn btn-sm btn-success mr-1 mb-1"
                                         target="_blank">
                                         <i class="fas fa-print"></i>
                                     </a>
                                     <a href="{{ route('terapis.transaksi.tambah.produk', $t->id) }}"
-                                        class="btn btn-sm btn-success">
+                                        class="btn btn-sm btn-success mr-1 mb-1">
                                         + Produk
                                     </a>
                                     <!-- -- Delete -- -->
-                                    <a href="#" onclick="confirmDelete('{{ $t->id}}')" class="btn btn-sm btn-danger"
+                                    <a href="#" onclick="confirmDelete('{{ $t->id}}')" class="btn btn-sm btn-danger mr-1 mb-1"
                                         title="Delete">
                                         <i class="fas fa-trash"></i> Hapus
                                     </a>
@@ -130,6 +131,7 @@
                                         @method('DELETE')
                                         <button type="submit" style="display: none;"></button>
                                     </form>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach

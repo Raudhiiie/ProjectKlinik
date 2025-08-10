@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Produk;
 use App\Models\Terapis;
-
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
 
 class ProdukController extends Controller
 {
@@ -18,24 +20,34 @@ class ProdukController extends Controller
     // Menampilkan Produk Gudang
     public function index(Request $request, $posisi)
     {
-        // Mulai query
+        // Produk semua sesuai posisi
         $query = Produk::where('posisi', $posisi)->orderBy('tanggal', 'desc');
 
-        // Jika ada request filter nama_produk
         if ($request->has('nama_produk') && $request->nama_produk != '') {
             $query->whereRaw('LOWER(nama_produk) = ?', [strtolower($request->nama_produk)]);
         }
-
-
         $produk = $query->get();
 
-        // Arahkan ke view sesuai posisi
+        // Produk yang stok terakhirnya habis (sisa <= 0)
+        $produkHabisNotif = Produk::where('posisi', $posisi)
+            ->select('nama_produk', DB::raw('MAX(id) as max_id'))
+            ->groupBy('nama_produk')
+            ->get()
+            ->map(function ($item) {
+                return Produk::find($item->max_id);
+            })
+            ->filter(function ($produk) {
+                return $produk && $produk->sisa <= 0;
+            });
+
+
         if (in_array($posisi, ['gudang', 'cabin', 'cream'])) {
-            return view("terapis.produk.$posisi.index", compact('produk', 'posisi'));
+            return view("terapis.produk.$posisi.index", compact('produk', 'posisi', 'produkHabisNotif'));
         } else {
-            abort(404); // jika posisi tidak valid
+            abort(404);
         }
     }
+
 
 
 

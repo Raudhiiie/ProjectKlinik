@@ -21,7 +21,7 @@
             <a href="{{ route('terapis.layanan.create') }}" class="btn btn-pink mb-3">+ Tambah Layanan</a>
 
             <div class="table-responsive">
-                <table id="example1" class="table table-striped table-bordered table-hover" style="width:100%">
+                <table id="example1" class="table" style="width:100%">
                     <thead class="text-center">
                         <tr>
                             <th>No</th>
@@ -39,50 +39,67 @@
                                     @if ($layanan->sublayanans->isEmpty())
                                         <span class="text-muted">-</span>
                                     @else
-                                        <ul>
+                                        <ul class="list-unstyled">
                                             @foreach ($layanan->sublayanans as $sub)
-                                                <li>
-                                                    {{ $sub->nama }} - Rp{{ number_format($sub->harga, 0, ',', '.') }}
-                                                    <a href="#" class="text-success ml-2"
-                                                        onclick="editSubLayanan({{ $sub->id }}, '{{ $sub->nama }}', {{ $sub->harga }})">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
+                                                <li class="mb-2 border rounded px-3 py-2">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <strong>{{ $sub->nama }}</strong> —
+                                                            Rp{{ number_format($sub->harga, 0, ',', '.') }}
+                                                        </div>
+                                                        <div class="d-flex align-items-center" style="gap: 6px;">
+                                                            <!-- Tombol Edit -->
+                                                            <a href="#" class="btn btn-sm btn-outline-success"
+                                                                onclick="editSubLayanan({{ $sub->id }}, '{{ $sub->nama }}', {{ $sub->harga }})"
+                                                                title="Edit">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
 
-                                                    <a href="#" onclick="confirmDelete('sub{{ $sub->id }}')" class="text-danger ml-2"><i
-                                                            class="fas fa-trash"></i></a>
+                                                            <!-- Tombol Hapus -->
+                                                            <a href="#" onclick="confirmDelete('sub{{ $sub->id }}')"
+                                                                class="btn btn-sm btn-outline-danger" title="Hapus">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </a>
 
-                                                    <form id="deleteFormsub{{ $sub->id }}"
-                                                        action="{{ route('terapis.layanan.sub.destroy', $sub->id) }}" method="POST"
-                                                        style="display:none;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                    </form>
+                                                            <!-- Form Delete -->
+                                                            <form id="deleteFormsub{{ $sub->id }}"
+                                                                action="{{ route('terapis.layanan.sub.destroy', $sub->id) }}"
+                                                                method="POST" style="display: none;">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                            </form>
+                                                        </div>
+                                                    </div>
                                                 </li>
                                             @endforeach
                                         </ul>
+
                                     @endif
                                 </td>
                                 <td>
-                                    <a href="{{ route('terapis.layanan.createSubLayanan', ['layanan_id' => $layanan->id]) }}"
-                                        class="btn btn-sm btn-primary">
-                                        + Sub
-                                    </a>
+                                    <div class="d-flex justify-content-center align-items-center" style="gap: 5px;">
+                                        <a href="{{ route('terapis.layanan.createSubLayanan', ['layanan_id' => $layanan->id]) }}"
+                                            class="btn btn-sm btn-primary">
+                                            + Sub
+                                        </a>
 
-                                    <a href="#" class="text-success ml-2"
-                                        onclick="editLayanan({{ $layanan->id }}, '{{ $layanan->nama }}')">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
+                                        <a href="#" class="btn btn-sm btn-outline-success"
+                                            onclick="editLayanan({{ $layanan->id }}, '{{ $layanan->nama }}')">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
 
-                                    <a href="#" onclick="confirmDelete('main{{ $layanan->id }}')" class="text-danger ml-2">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
+                                        <a href="#" onclick="confirmDelete('main{{ $layanan->id }}')"
+                                            class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
 
-                                    <form id="deleteFormmain{{ $layanan->id }}"
-                                        action="{{ route('terapis.layanan.destroy', $layanan->id) }}" method="POST"
-                                        style="display:none;">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
+                                        <form id="deleteFormmain{{ $layanan->id }}"
+                                            action="{{ route('terapis.layanan.destroy', $layanan->id) }}" method="POST"
+                                            style="display:none;">
+                                            @csrf
+                                            @method('DELETE')
+                                        </form>
+                                    </div>
                                 </td>
 
                             </tr>
@@ -184,11 +201,11 @@
             $('#editLayananForm').attr('action', '/terapis/layanan/' + id);
         }
 
-
-
         $(function () {
             var table = $("#example1").DataTable({
                 scrollX: true,
+                scrollY: "400px",      // tinggi scroll vertikal
+                scrollCollapse: true,  // tabel bisa mengecil jika datanya kurang
                 autoWidth: false,
                 responsive: true
             });

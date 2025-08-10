@@ -7,23 +7,23 @@
 
 @section('content')
     <div class="container-fluid dashboard-container">
-        <h3 class="mb-4">Dashboard Dokter</h3>
+        <h3 class="mb-3">Dashboard Dokter</h3>
 
         <!-- Grafik -->
-        <div class="row justify-content-center mb-5">
+        <div class="row justify-content-center">
             <!-- Grafik Harian -->
-            <div class="col-md-6 mb-4">
+            <div class="col-md-6 mb-3">
                 <div class="card p-3 shadow-sm">
-                    <h5 class="text-center mb-3">Grafik Pasien 7 Hari Terakhir</h5>
-                    <canvas id="chartHarian" height="200"></canvas>
+                    <h5 class="text-center mb-2">Grafik Pasien 7 Hari Terakhir</h5>
+                    <canvas id="chartHarian" height="180"></canvas>
                 </div>
             </div>
 
             <!-- Grafik Bulanan -->
-            <div class="col-md-6 mb-4">
+            <div class="col-md-6 mb-3">
                 <div class="card p-3 shadow-sm">
-                    <h5 class="text-center mb-3">Grafik Pasien Tahun Ini</h5>
-                    <canvas id="chartBulanan" height="200"></canvas>
+                    <h5 class="text-center mb-2">Grafik Pasien Tahun Ini</h5>
+                    <canvas id="chartBulanan" height="180"></canvas>
                 </div>
             </div>
         </div>
@@ -31,7 +31,7 @@
         <!-- Ringkasan -->
         <div class="row justify-content-center">
             <!-- Pasien Hari Ini -->
-            <div class="col-md-5 d-flex justify-content-center mb-4">
+            <div class="col-md-4 d-flex justify-content-center mb-3">
                 <div class="info-box">
                     <i class="fas fa-user dashboard-icon"></i>
                     <div class="info-title">Pasien Hari Ini</div>
@@ -40,7 +40,7 @@
             </div>
 
             <!-- Pasien Bulan Ini -->
-            <div class="col-md-5 d-flex justify-content-center mb-4">
+            <div class="col-md-4 d-flex justify-content-center mb-3">
                 <div class="info-box">
                     <i class="fas fa-users dashboard-icon"></i>
                     <div class="info-title">Pasien Bulan Ini</div>
@@ -49,7 +49,7 @@
             </div>
 
             <!-- Rekam Medis -->
-            <div class="col-md-12 d-flex justify-content-center">
+            <div class="col-md-4 d-flex justify-content-center mb-3">
                 <div class="info-box">
                     <i class="fas fa-notes-medical dashboard-icon"></i>
                     <div class="info-title">Rekam Medis</div>

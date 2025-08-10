@@ -35,9 +35,9 @@
                         class="form-inline d-flex flex-wrap align-items-center">
                         <select name="nama_produk" class="form-control mr-2 mb-2">
                             <option value="">-- Semua Produk --</option>
-                    @php
-                        $allProduk = \App\Models\Produk::where('posisi', $posisi)->pluck('nama_produk')->unique();
-                    @endphp
+                            @php
+                                $allProduk = \App\Models\Produk::where('posisi', $posisi)->pluck('nama_produk')->unique();
+                            @endphp
 
                             @foreach($allProduk as $nama)
                                 <option value="{{ $nama }}" {{ request('nama_produk') == $nama ? 'selected' : '' }}>
@@ -56,6 +56,17 @@
                 </div>
             </div>
 
+            @if($produkHabisNotif->count() > 0)
+                <div class="alert alert-danger">
+
+                    <ul>
+                        @foreach($produkHabisNotif as $ph)
+                            <li><strong>{{ $ph->nama_produk }}</strong> stok di <strong>{{ ucfirst($ph->posisi) }}</strong> habis.
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
 
             <!-- DataTable -->
@@ -79,30 +90,33 @@
                             <tr>
                                 <td>{{ $key + 1 }}</td>
                                 <td>{{ $data->nama_produk }}</td>
-                                <td>{{ \Carbon\Carbon::parse($data->tanggal)->format('d-m-Y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($data->tanggal)->translatedFormat('j M Y') }}<br></td>
                                 <td>{{ $data->in }}</td>
                                 <td>{{ $data->out }}</td>
                                 <td>{{ $data->sisa }}</td>
                                 <td>{{ $data->posisi }}</td>
                                 <td>
-                                    <!-- Edit -->
-                                    <a href="{{ route('terapis.produk.edit', ['posisi' => strtolower($data->posisi), 'id' => $data->id]) }}"
-                                        class="text-success" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
+                                    <div class="d-flex justify-content-center align-items-center" style="gap: 5px;">
+                                        <!-- Edit -->
+                                        <a href="{{ route('terapis.produk.edit', ['posisi' => strtolower($data->posisi), 'id' => $data->id]) }}"
+                                            class="btn btn-sm btn-outline-success" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
 
-                                    <!-- Delete -->
-                                    <a href="#" onclick="confirmDelete('{{ $data->id }}')" class="text-danger" title="Delete">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
+                                        <!-- Delete -->
+                                        <a href="#" onclick="confirmDelete('{{ $data->id }}')"
+                                            class="btn btn-sm btn-outline-danger" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
 
-                                    <form id="deleteForm{{ $data->id }}"
-                                        action="{{ route('terapis.produk.destroy', ['posisi' => strtolower($data->posisi), 'id' => $data->id]) }}"
-                                        method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" style="display: none;"></button>
-                                    </form>
+                                        <form id="deleteForm{{ $data->id }}"
+                                            action="{{ route('terapis.produk.destroy', ['posisi' => strtolower($data->posisi), 'id' => $data->id]) }}"
+                                            method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" style="display: none;"></button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
@@ -136,7 +150,12 @@
         $(function () {
             var table = $("#example1").DataTable({
                 scrollX: true,
+                scrollY: "400px",      // tinggi scroll vertikal
+                scrollCollapse: true,  // tabel bisa mengecil jika datanya kurang
+                autoWidth: false,
+                responsive: true
             });
+
             table.buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
         });
 
