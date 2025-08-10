@@ -29,6 +29,11 @@
                 <!-- DataTable buttons -->
                 <div id="datatable-buttons"></div>
             </div>
+{{-- 
+            <div class="mb-3">
+                <span class="badge badge-success">Pasien Baru: {{ $pasienBaru }}</span>
+                <span class="badge badge-primary">Pasien Lama: {{ $pasienLama }}</span>
+            </div> --}}
 
             <!-- DataTable -->
             <div class="table-responsive">

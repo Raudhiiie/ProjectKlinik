@@ -176,6 +176,54 @@ class AntrianController extends Controller
         $antrian->save();
 
         return redirect()->route('terapis.dashboard.index')->with('success', 'Antrian telah diselesaikan.');
-        
+    }
+    public function monitorData()
+    {
+        $tanggalHariIni = Carbon::today()->toDateString();
+
+        // Antrian yang sedang dipanggil
+        $antrianDipanggil = Antrian::whereDate('tanggal', $tanggalHariIni)
+            ->where('status', 'proses')
+            ->orderBy('no_antrian')
+            ->first();
+
+        // Antrian terakhir selesai
+        $antrianTerakhirSelesai = Antrian::whereDate('tanggal', $tanggalHariIni)
+            ->where('status', 'selesai')
+            ->orderByDesc('updated_at')
+            ->first();
+
+        // Waiting list
+        $antrianSelanjutnya = Antrian::whereDate('tanggal', $tanggalHariIni)
+            ->where('status', 'menunggu')
+            ->orderBy('no_antrian')
+            ->take(5)
+            ->get();
+
+        // Tentukan tampilan utama
+        if ($antrianDipanggil) {
+            // Utama: pasien yang sedang dipanggil
+            $noAntrianUtama = $antrianDipanggil->no_antrian;
+            $statusUtama = $antrianDipanggil->status;
+        } elseif ($antrianTerakhirSelesai) {
+            // Utama: pasien terakhir selesai
+            $noAntrianUtama = $antrianTerakhirSelesai->no_antrian;
+            $statusUtama = $antrianTerakhirSelesai->status;
+        } else {
+            // Kalau belum ada yang selesai, ambil dari waiting list
+            $noAntrianUtama = $antrianSelanjutnya->first()->no_antrian ?? null;
+            $statusUtama = $antrianSelanjutnya->first()->status ?? null;
+        }
+
+        return response()->json([
+            'no_antrian' => $noAntrianUtama ? str_pad($noAntrianUtama, 3, '0', STR_PAD_LEFT) : null,
+            'status' => $statusUtama,
+            'waiting_list' => $antrianSelanjutnya->map(function ($item) {
+                return [
+                    'no_antrian' => str_pad($item->no_antrian, 3, '0', STR_PAD_LEFT),
+                    'status' => $item->status
+                ];
+            }),
+        ]);
     }
 }

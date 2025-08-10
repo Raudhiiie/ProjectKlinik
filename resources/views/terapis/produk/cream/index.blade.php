@@ -58,7 +58,6 @@
 
             @if($produkHabisNotif->count() > 0)
                 <div class="alert alert-danger">
-
                     <ul>
                         @foreach($produkHabisNotif as $ph)
                             <li><strong>{{ $ph->nama_produk }}</strong> stok di <strong>{{ ucfirst($ph->posisi) }}</strong> habis.

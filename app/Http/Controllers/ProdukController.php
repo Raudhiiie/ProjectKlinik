@@ -29,16 +29,29 @@ class ProdukController extends Controller
         $produk = $query->get();
 
         // Produk yang stok terakhirnya habis (sisa <= 0)
-        $produkHabisNotif = Produk::where('posisi', $posisi)
-            ->select('nama_produk', DB::raw('MAX(id) as max_id'))
-            ->groupBy('nama_produk')
-            ->get()
-            ->map(function ($item) {
-                return Produk::find($item->max_id);
-            })
-            ->filter(function ($produk) {
-                return $produk && $produk->sisa <= 0;
-            });
+        // Produk yang stok terakhirnya habis (sisa <= 0) HANYA untuk posisi ini
+        // Ambil produk terbaru di posisi ini yang stoknya habis
+        $produkHabisNotif = Produk::whereIn('id', function ($q) use ($posisi) {
+            $q->select(DB::raw('MAX(id)'))
+                ->from('produks') // pastikan sesuai nama tabel di database
+                ->where('posisi', $posisi)
+                ->groupBy('nama_produk');
+        })
+            ->where('posisi', $posisi) // extra guard, biar aman
+            ->where('sisa', '<=', 0)
+            ->get();
+
+
+        // $produkHabisNotif = Produk::where('posisi', $posisi)
+        //     ->select('nama_produk', DB::raw('MAX(id) as max_id'))
+        //     ->groupBy('nama_produk')
+        //     ->get()
+        //     ->map(function ($item) {
+        //         return Produk::find($item->max_id);
+        //     })
+        //     ->filter(function ($produk) {
+        //         return $produk && $produk->sisa <= 0;
+        //     });
 
 
         if (in_array($posisi, ['gudang', 'cabin', 'cream'])) {

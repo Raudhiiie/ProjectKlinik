@@ -58,7 +58,8 @@
                             @foreach ($produkHabisNotif as $produk)
                                 <a href="{{ route('terapis.produk.index', $produk->posisi) }}" class="dropdown-item">
                                     <i class="fas fa-box-open mr-2"></i>
-                                    <strong>{{ $produk->nama_produk }}</strong> di
+                                    Produk di
+                                    {{-- <strong>{{ $produk->nama_produk }}</strong> di --}}
                                     <strong>{{ ucfirst($produk->posisi) }}</strong> habis.
                                     @php
                                         $tanggal = \Carbon\Carbon::parse($produk->last_date);
@@ -67,9 +68,6 @@
                                 </a>
                                 <div class="dropdown-divider"></div>
                             @endforeach
-
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item dropdown-footer">Lihat Semua</a>
                         </div>
                     </li>
 

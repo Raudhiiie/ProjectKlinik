@@ -6,7 +6,6 @@
         <title>Monitor Antrian - Pretty's Clinic</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="{{ asset('dist/css/monitor.css') }}">
-
     </head>
 
     <body>
@@ -22,7 +21,6 @@
             </div>
         </div>
 
-
         <div class="main">
             <div class="left-box">
                 <div class="antrian-box">
@@ -37,24 +35,23 @@
                             ---
                         @endif
                     </div>
-<div class="status-container">
-                    @if ($antrianDipanggil)
-                        @if ($antrianDipanggil->status === 'proses')
-                            <div class="status-antrian status-konsultasi" style="font-size: 2rem;">Status: Konsultasi</div>
-                        @elseif ($antrianDipanggil->status === 'selesai')
+                    <div class="status-container">
+                        @if ($antrianDipanggil)
+                            @if ($antrianDipanggil->status === 'proses')
+                                <div class="status-antrian status-konsultasi" style="font-size: 2rem;">Status: Konsultasi</div>
+                            @elseif ($antrianDipanggil->status === 'selesai')
+                                <div class="status-antrian status-selesai" style="font-size: 2rem;">Status: Selesai</div>
+                            @else
+                                <div class="status-antrian status-menunggu" style="font-size: 2rem;">Status: Menunggu</div>
+                            @endif
+                        @elseif($antrianTerakhirSelesai)
                             <div class="status-antrian status-selesai" style="font-size: 2rem;">Status: Selesai</div>
                         @else
-                            <div class="status-antrian status-menunggu" style="font-size: 2rem;">Status: Menunggu</div>
+                            <div class="status-antrian status-tidak-ada" style="font-size: 2rem;">Status: Tidak Ada Antrian
+                            </div>
                         @endif
-                    @elseif($antrianTerakhirSelesai)
-                        <div class="status-antrian status-selesai" style="font-size: 2rem;">Status: Selesai</div>
-                    @else
-                        <div class="status-antrian status-tidak-ada" style="font-size: 2rem;">Status: Tidak Ada Antrian
-                        </div>
-                    @endif
                     </div>
                 </div>
-
 
                 <div class="waiting-list">
                     @forelse ($antrianSelanjutnya as $item)
@@ -65,9 +62,7 @@
                     @empty
                         <div class="waiting-item">Tidak ada antrian</div>
                     @endforelse
-
                 </div>
-
             </div>
 
             <div class="right-box">
@@ -79,20 +74,77 @@
         <div class="footer"></div>
 
         <script>
+            // Update jam
             function updateClock() {
                 const now = new Date();
-                const jam = String(now.getHours()).padStart(2, '0');
-                const menit = String(now.getMinutes()).padStart(2, '0');
-                document.getElementById('clock').innerText = `${jam}:${menit}`;
+                document.getElementById('clock').innerText =
+                    now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
             }
-
             setInterval(updateClock, 1000);
             updateClock();
 
-            // ⏱️ Auto-refresh setiap 30 detik
-            setTimeout(() => {
-                location.reload();
-            }, 30000); // 30000ms = 30 detik
+            // Update data antrian + waiting list
+            function updateAntrian() {
+                fetch("{{ route('monitor.antrian.data') }}")
+                    .then(response => response.json())
+                    .then(data => {
+                        // Nomor antrian utama
+                        document.querySelector('.antrian-number').innerText =
+                            data.no_antrian ? data.no_antrian : '---';
+
+                        // Status utama
+                        const statusEl = document.querySelector('.status-antrian');
+                        statusEl.classList.remove('status-konsultasi', 'status-selesai', 'status-menunggu', 'status-tidak-ada');
+
+                        let statusText = 'Tidak Ada Antrian';
+                        let statusClass = 'status-tidak-ada';
+
+                        if (data.status) {
+                            switch (data.status.toLowerCase()) {
+                                case 'proses':
+                                    statusText = 'Konsultasi';
+                                    statusClass = 'status-konsultasi';
+                                    break;
+                                case 'selesai':
+                                    statusText = 'Selesai';
+                                    statusClass = 'status-selesai';
+                                    break;
+                                case 'menunggu':
+                                    statusText = 'Menunggu';
+                                    statusClass = 'status-menunggu';
+                                    break;
+                            }
+                        }
+
+                        statusEl.innerText = "Status: " + statusText;
+                        statusEl.classList.add(statusClass);
+
+                        // Update waiting list
+                        const waitingListEl = document.querySelector('.waiting-list');
+                        waitingListEl.innerHTML = '';
+
+                        if (data.waiting_list && data.waiting_list.length > 0) {
+                            data.waiting_list.forEach(item => {
+                                const div = document.createElement('div');
+                                div.classList.add('waiting-item');
+                                div.innerHTML = `
+                        ${item.no_antrian}
+                        <small>Status: ${item.status}</small>
+                    `;
+                                waitingListEl.appendChild(div);
+                            });
+                        } else {
+                            const div = document.createElement('div');
+                            div.classList.add('waiting-item');
+                            div.innerText = 'Tidak ada antrian';
+                            waitingListEl.appendChild(div);
+                        }
+                    })
+                    .catch(err => console.error('Gagal update antrian:', err));
+            }
+            // Jalankan setiap 1 detik
+            setInterval(updateAntrian, 1000);
+            updateAntrian();
         </script>
     </body>
 

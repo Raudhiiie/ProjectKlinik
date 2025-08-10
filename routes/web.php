@@ -44,6 +44,7 @@ Route::post('/login', [AuthConttroller::class, 'login'])->name('login.submit');
 Route::post('/logout', [AuthConttroller::class, 'logout'])->name('logout');
 
 Route::get('/monitor-antrian', [AntrianController::class, 'monitor'])->name('monitor.antrian');
+Route::get('/monitor-antrian/data', [AntrianController::class, 'monitorData'])->name('monitor.antrian.data');
 
 // Route::get('/terapis/pasien', [PasienController::class, 'index'])->name('terapis.pasien.index');
 Route::prefix('terapis')->name('terapis.')->group(function () {
@@ -76,6 +77,7 @@ Route::prefix('terapis')->name('terapis.')->group(function () {
     Route::post('/sublayanan/store', [LayananController::class, 'storeSubLayanan'])->name('sublayanan.store');
     Route::get('dashboard', [DashboardController::class, 'indexterapis'])->name('dashboard.index');
     Route::post('antrian', [AntrianController::class, 'store'])->name('antrian.store');
+
     Route::post('/antrian/{id}/panggil', [AntrianController::class, 'panggilPasien'])->name('antrian.panggil');
     Route::put('/antrian/{id}/selesai', [AntrianController::class, 'selesai'])->name('antrian.selesai');
     //Route::put('/antrian/{id}/ubah-status', [AntrianController::class, 'ubahStatus'])->name('antrian.ubahStatus');

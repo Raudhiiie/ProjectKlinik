@@ -38,7 +38,6 @@
                             @php
                                 $allProduk = \App\Models\Produk::where('posisi', $posisi)->pluck('nama_produk')->unique();
                             @endphp
-
                             @foreach($allProduk as $nama)
                                 <option value="{{ $nama }}" {{ request('nama_produk') == $nama ? 'selected' : '' }}>
                                     {{ $nama }}
@@ -57,7 +56,6 @@
             </div>
             @if($produkHabisNotif->count() > 0)
                 <div class="alert alert-danger">
-
                     <ul>
                         @foreach($produkHabisNotif as $ph)
                             <li><strong>{{ $ph->nama_produk }}</strong> stok di <strong>{{ ucfirst($ph->posisi) }}</strong> habis.
@@ -66,8 +64,6 @@
                     </ul>
                 </div>
             @endif
-
-
             <!-- DataTable -->
             <div class="table-responsive">
                 <table id="example1" class="table" style="width:100%">

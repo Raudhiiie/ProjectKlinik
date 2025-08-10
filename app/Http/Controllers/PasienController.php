@@ -17,6 +17,9 @@ class PasienController extends Controller
     {
         $pasien = Pasien::withCount('antrians')->latest()->get();
 
+        // $pasienBaru = $pasien->filter(fn($p) => $p->antrians_count == 0)->count();
+        // $pasienLama = $pasien->filter(fn($p) => $p->antrians_count > 0)->count();
+
         return view('terapis.pasien.index', compact('pasien'));
     }
 
@@ -35,7 +38,7 @@ class PasienController extends Controller
     {
 
         $request->validate([
-            'no_rm' => 'required',
+            'no_rm' => 'required|unique:pasiens,no_rm',
             'nama' => 'required',
             'nik' => 'required',
             'alamat' => 'required',
@@ -43,6 +46,8 @@ class PasienController extends Controller
             'jenis_kelamin' => 'required',
             'tanggal_lahir' => 'required',
             'no_hp' => 'required',
+        ], [
+            'no_rm.unique' => 'No RM sudah terdaftar.',
         ]);
 
         $pasien = Pasien::create([
