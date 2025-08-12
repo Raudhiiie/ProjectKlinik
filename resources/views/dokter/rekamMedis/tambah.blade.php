@@ -72,8 +72,9 @@
                     {{-- Sub Layanan --}}
                     <div class="form-group mt-3">
                         <label>Sub Layanan (Tindakan)</label>
-                        <div class="accordion" id="accordionExample">
+                        <div class="row" id="accordionExample">
                             @foreach ($layanan as $l)
+                            <div class="col-md-4 mb-3">  
                                 <div class="card">
                                     <div class="card-header" id="heading{{ $l->id }}">
                                         <h5 class="mb-0">
@@ -90,7 +91,7 @@
                                         <div class="card-body">
                                             <div class="row">
                                                 @foreach ($l->subLayanans as $sub)
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-12">
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="checkbox" name="sub_layanan_ids[]"
                                                                 value="{{ $sub->id }}" id="sub_{{ $sub->id }}">
@@ -104,10 +105,10 @@
                                         </div>
                                     </div>
                                 </div>
+                                </div> 
                             @endforeach
                         </div>
                     </div>
-
                 </div>
 
                 <div class="card-footer text-right">

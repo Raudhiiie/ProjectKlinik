@@ -60,7 +60,7 @@
                             <small>Status: {{ ucfirst($item->status) }}</small>
                         </div>
                     @empty
-                        <div class="waiting-item">Tidak ada antrian</div>
+                        <div class="waiting-item"></div>
                     @endforelse
                 </div>
             </div>
@@ -136,7 +136,7 @@
                         } else {
                             const div = document.createElement('div');
                             div.classList.add('waiting-item');
-                            div.innerText = 'Tidak ada antrian';
+                            div.innerText = '';
                             waitingListEl.appendChild(div);
                         }
                     })

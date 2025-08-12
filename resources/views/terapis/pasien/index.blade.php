@@ -29,12 +29,14 @@
                 <!-- DataTable buttons -->
                 <div id="datatable-buttons"></div>
             </div>
-{{-- 
-            <div class="mb-3">
-                <span class="badge badge-success">Pasien Baru: {{ $pasienBaru }}</span>
-                <span class="badge badge-primary">Pasien Lama: {{ $pasienLama }}</span>
-            </div> --}}
 
+            {{-- Counter Pasien Baru & Lama --}}
+            <div class="mb-3">
+                <small class="text-muted fst-italic">
+                    <span class="badge bg-success">Pasien Baru</span> = Kunjungan ≤ 1 kali &nbsp;&nbsp;
+                    <span class="badge bg-secondary">Pasien Lama</span> = Kunjungan > 1 kali
+                </small>
+            </div>
             <!-- DataTable -->
             <div class="table-responsive">
                 <table id="example1" class="table" style="width:100%">
@@ -50,6 +52,7 @@
                             <th style="text-align: center;">Tanggal Lahir</th>
                             <th style="text-align: center;">No Hp</th>
                             <th style="text-align: center;">Jumlah Kunjungan</th>
+                            <th style="text-align: center;">Status</th>
                             <th style="text-align: center;">Aksi</th>
                         </tr>
                     </thead>
@@ -68,6 +71,14 @@
                                 <td class="text-center">
                                     {{ $data->antrians_count > 0 ? $data->antrians_count . ' kali' : 'Belum Pernah' }}
                                 </td>
+                                <td class="text-center">
+                                    @if ($data->antrians_count <= 1)
+                                        <span class="badge bg-success">Pasien Baru</span>
+                                    @else
+                                        <span class="badge bg-secondary">Pasien Lama</span>
+                                    @endif
+                                </td>
+
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center align-items-center" style="gap: 5px;">
                                         <!-- Detail -->

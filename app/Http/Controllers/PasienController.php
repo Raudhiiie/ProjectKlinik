@@ -13,22 +13,42 @@ class PasienController extends Controller
      * Display a listing of the resource.
      */
 
-    public function index()
+    public function index(Request $request)
     {
-        $pasien = Pasien::withCount('antrians')->latest()->get();
+        $status = $request->input('status');
 
-        // $pasienBaru = $pasien->filter(fn($p) => $p->antrians_count == 0)->count();
-        // $pasienLama = $pasien->filter(fn($p) => $p->antrians_count > 0)->count();
+        $pasien = Pasien::withCount('antrians');
 
-        return view('terapis.pasien.index', compact('pasien'));
+        if ($status === 'baru') {
+            $pasien = $pasien->having('antrians_count', '<=', 1);
+        } elseif ($status === 'lama') {
+            $pasien = $pasien->having('antrians_count', '>=', 2);
+        }
+
+        $pasien = $pasien->get();
+
+        $pasienBaru = Pasien::withCount('antrians')->having('antrians_count', '<=', 1)->count();
+        $pasienLama = Pasien::withCount('antrians')->having('antrians_count', '>=', 2)->count();
+
+        return view('terapis.pasien.index', compact('pasien', 'pasienBaru', 'pasienLama', 'status'));
     }
+
+
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        return view('terapis.pasien.tambah');
+        // Ambil pasien terakhir dan hitung nomor berikutnya
+        $lastPasien = Pasien::orderBy('no_rm', 'desc')->first();
+        $lastNumber = $lastPasien ? (int) $lastPasien->no_rm : 0;
+        $nextNumber = $lastNumber + 1;
+
+        // Format ke 3 digit (001, 002, dst)
+        $no_rm = sprintf('%03d', $nextNumber);
+
+        return view('terapis.pasien.tambah', compact('no_rm'));
     }
 
     /**
@@ -38,7 +58,6 @@ class PasienController extends Controller
     {
 
         $request->validate([
-            'no_rm' => 'required|unique:pasiens,no_rm',
             'nama' => 'required',
             'nik' => 'required',
             'alamat' => 'required',
@@ -46,12 +65,18 @@ class PasienController extends Controller
             'jenis_kelamin' => 'required',
             'tanggal_lahir' => 'required',
             'no_hp' => 'required',
-        ], [
-            'no_rm.unique' => 'No RM sudah terdaftar.',
         ]);
 
+        // Ambil pasien terakhir berdasarkan nomor RM
+        $lastPasien = Pasien::orderBy('no_rm', 'desc')->first();
+        $lastNumber = $lastPasien ? (int) $lastPasien->no_rm : 0;
+        $newNumber = $lastNumber + 1;
+
+        // Format ke 3 digit
+        $no_rm = sprintf('%03d', $newNumber);
+
         $pasien = Pasien::create([
-            'no_rm' => $request->no_rm,
+            'no_rm' => $no_rm,
             'nama' => $request->nama,
             'nik' => $request->nik,
             'alamat' => $request->alamat,
@@ -92,7 +117,7 @@ class PasienController extends Controller
      */
     public function update(Request $request, $no_rm)
     {
-        $pasien = Pasien::where('no_rm', $no_rm)->first();
+        $pasien = Pasien::where('no_rm', $no_rm)->firstOrFail();
 
         if (!$pasien) {
             return response()->json([

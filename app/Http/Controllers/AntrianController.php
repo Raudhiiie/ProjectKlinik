@@ -210,9 +210,6 @@ class AntrianController extends Controller
             $noAntrianUtama = $antrianTerakhirSelesai->no_antrian;
             $statusUtama = $antrianTerakhirSelesai->status;
         } else {
-            // Kalau belum ada yang selesai, ambil dari waiting list
-            $noAntrianUtama = $antrianSelanjutnya->first()->no_antrian ?? null;
-            $statusUtama = $antrianSelanjutnya->first()->status ?? null;
         }
 
         return response()->json([

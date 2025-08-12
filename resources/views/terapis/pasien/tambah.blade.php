@@ -12,11 +12,7 @@
                     <div class="row">
                         <div class="col-md-6 form-group">
                             <label>No RM</label>
-                            <input type="text" class="form-control @error('no_rm') is-invalid @enderror" id="no_rm"
-                                name="no_rm" placeholder="Masukkan No RM" required>
-                            @error('no_rm')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <input type="text" class="form-control" value="{{$no_rm}}" name="no_rm" readonly>
                         </div>
 
                         <div class="col-md-6 form-group">
